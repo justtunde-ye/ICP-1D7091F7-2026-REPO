@@ -4,21 +4,22 @@ A Python-based TCP Network Port Scanner developed as part of the **InternCareerP
 
 ## Project Overview
 
-This project scans a target host for open TCP ports within a user-defined range. It resolves hostnames, attempts TCP connections, and displays the service running on each open port.
+This application scans a target host for open TCP ports within a user-defined range. It resolves hostnames, identifies open ports, attempts service detection, and generates a professional scan report.
 
-The scanner is intended for educational purposes and should only be used on systems you own or have permission to test.
+The project demonstrates fundamental cybersecurity concepts including network enumeration, socket programming, service identification, and multithreaded scanning.
 
 ---
 
 ## Features
 
-- Scan any valid IPv4 address or hostname
-- Scan a custom TCP port range
-- Detect open TCP ports
-- Display common service names
-- Resolve hostnames to IP addresses
-- Display scan start time and total scan duration
-- Built using Python's standard library (no external dependencies)
+- TCP port scanning
+- Hostname to IP resolution
+- Service detection
+- Multithreaded scanning using ThreadPoolExecutor
+- Automatic scan report generation
+- Professional scan summary
+- Error handling for invalid hostnames
+- Clean and modular Python code
 
 ---
 
@@ -26,8 +27,9 @@ The scanner is intended for educational purposes and should only be used on syst
 
 - Python 3
 - Socket Programming
-- TCP/IP Networking
+- Concurrent Futures (ThreadPoolExecutor)
 - Git & GitHub
+- Kali Linux
 
 ---
 
@@ -35,69 +37,123 @@ The scanner is intended for educational purposes and should only be used on syst
 
 ```
 Project1-Network-Port-Scanner/
-├── scanner.py
+│
+├── docs/
+├── screenshots/
 ├── README.md
 ├── requirements.txt
-├── docs/
-└── screenshots/
-    └── scanner-output.png
+├── scanner.py
+├── scanner_v1.py
+└── scan_results.txt (generated automatically)
 ```
 
 ---
 
-## How to Run
+## Installation
 
-Clone the repository and navigate to the project directory.
+Clone the repository:
+
+```bash
+git clone https://github.com/justtunde-ye/ICP-1D7091F7-2026-REPO.git
+```
+
+Navigate to the project:
+
+```bash
+cd ICP-1D7091F7-2026-REPO/Week1/Project1-Network-Port-Scanner
+```
+
+Run the scanner:
 
 ```bash
 python3 scanner.py
 ```
 
-Example:
-
-```
-Target: scanme.nmap.org
-Starting Port: 20
-Ending Port: 100
-```
-
 ---
 
-## Sample Output
+## Example Usage
+
+Target:
 
 ```
-Scanning target: 45.33.32.156
+scanme.nmap.org
+```
 
+Port Range:
+
+```
+20
+100
+```
+
+Example Output:
+
+```
 [OPEN] Port 21    Service: ftp
 [OPEN] Port 22    Service: ssh
 [OPEN] Port 80    Service: http
-
-Scan completed successfully.
 ```
 
 ---
 
-## Screenshot
+## Scan Report
 
-A sample execution screenshot is available in:
+The scanner automatically creates:
 
 ```
-screenshots/scanner-output.png
+scan_results.txt
 ```
+
+The report contains:
+
+- Target Host
+- Target IP
+- Open Ports
+- Detected Services
+- Total Ports Scanned
+- Scan Duration
+
+---
+
+## Skills Demonstrated
+
+- Python Programming
+- Socket Programming
+- TCP/IP Networking
+- Network Enumeration
+- Service Detection
+- Multithreading
+- Report Generation
+- Git Version Control
+- GitHub Project Management
 
 ---
 
 ## Future Improvements
 
-- Multithreaded scanning
-- Command-line arguments
-- Colored terminal output
-- Export scan results to a file
+- UDP scanning
 - Banner grabbing
-- UDP port scanning
+- OS detection
+- Command-line arguments
+- Export reports to CSV
+- Export reports to JSON
+- Progress bar
+- Colorized terminal output
 
 ---
 
 ## Disclaimer
 
-This tool is provided for educational purposes only. Only scan systems that you own or have explicit authorization to test.
+This tool is intended for educational purposes only.
+
+Only scan systems you own or have explicit authorization to test.
+
+---
+
+## Author
+
+**Babatunde Eletu**
+
+InternCareerPath Cyber Security Self-Learning Internship
+
+2026
