@@ -1,0 +1,15 @@
+Advanced Network Port Scanner Report
+========================================
+Target Host : scanme.nmap.org
+Target IP   : 45.33.32.156
+Scan Date   : 2026-08-04 08:24:16.665542
+
+Open Ports
+----------------------------------------
+21     ftp
+22     ssh
+80     http
+
+Ports Scanned : 81
+Open Ports    : 3
+Scan Duration : 0:00:39.974902
