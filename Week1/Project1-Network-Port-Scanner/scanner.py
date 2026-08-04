@@ -21,6 +21,7 @@ print(f"Time started: {datetime.now()}")
 print("-" * 50)
 
 start_time = datetime.now()
+open_ports = []
 
 try:
     for port in range(start_port, end_port + 1):
@@ -35,6 +36,7 @@ try:
             except OSError:
                 service = "Unknown"
 
+            open_ports.append((port, service))
             print(f"[OPEN] Port {port:<5} Service: {service}")
 
         sock.close()
@@ -47,5 +49,22 @@ except Exception as e:
 
 finally:
     finish_time = datetime.now()
+
+    print("-" * 50)
+    print("SCAN SUMMARY")
+    print("-" * 50)
+
+    print(f"Target Host  : {target}")
+    print(f"Target IP    : {target_ip}")
+    print(f"Ports Scanned: {end_port - start_port + 1}")
+    print(f"Open Ports   : {len(open_ports)}")
+
+    if open_ports:
+        print("\nOpen Port List")
+        print("-" * 50)
+
+        for port, service in open_ports:
+            print(f"{port:<6} {service}")
+
     print("-" * 50)
     print(f"Scan completed in {finish_time - start_time}")
