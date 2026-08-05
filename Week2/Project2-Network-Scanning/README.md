@@ -82,15 +82,19 @@ The assessment followed a structured reconnaissance methodology using Nmap to id
 
 The first phase of the assessment was to determine whether the target host was online and reachable. Nmap host discovery confirmed that the Metasploitable3 virtual machine was active on the network.
 
+## Host Discovery Overview
+
+![Host Discovery Overview](images/host-discovery-overview.png)
+
 ## Command Used
 
 ```bash
 nmap -sn 192.168.56.101
 ```
 
-## Screenshot
+## Scan Output Screenshot
 
-![Host Discovery](screenshots/host_discovery.png)
+![Host Discovery Scan Output](screenshots/host_discovery.png)
 
 ## Findings
 
