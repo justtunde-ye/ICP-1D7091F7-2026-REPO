@@ -8,6 +8,12 @@ This project demonstrates a comprehensive network scanning and enumeration asses
 
 All testing was performed in a controlled lab environment with authorization. Industry-standard tools such as Nmap and the Nmap Scripting Engine (NSE) were used to perform reconnaissance and service enumeration while documenting the findings in a professional report.
 
+## Introduction
+
+Network reconnaissance is a critical phase of penetration testing and security assessments, as it enables security professionals to identify active hosts, discover open ports, determine running services, and gather information about target systems before conducting further analysis. One of the most widely used tools for this purpose is Nmap (Network Mapper), an open-source network scanning utility capable of performing a variety of host discovery and port scanning techniques.
+
+This assessment was conducted against a Metasploitable3 virtual machine within an isolated lab environment for educational purposes. All activities were performed with proper authorization.
+
 ## Objectives
 
 - Verify target host availability.
@@ -58,10 +64,129 @@ All testing was performed in a controlled lab environment with authorization. In
 
 *To be completed as the assessment progresses.*
 
+---
+
 # Engagement Overview
 
 *To be completed.*
 
+---
+
 # Assessment Methodology
 
+The assessment followed a structured reconnaissance methodology using Nmap to identify active hosts, discover open ports, identify running services, perform operating system detection, and enumerate available network services.
+
+---
+
+# Reconnaissance and Host Discovery
+
+The first phase of the assessment was to determine whether the target host was online and reachable. Nmap host discovery confirmed that the Metasploitable3 virtual machine was active on the network.
+
+## Command Used
+
+```bash
+nmap -sn 192.168.56.101
+```
+
+## Screenshot
+
+![Host Discovery](screenshots/host_discovery.png)
+
+## Findings
+
+- Host successfully responded to ICMP requests.
+- Target was confirmed online.
+- MAC address identified as Oracle VirtualBox virtual NIC.
+- Ready for further enumeration.
+
+---
+
+# TCP Port Scanning
+
 *To be completed.*
+
+---
+
+# Service Enumeration
+
+*To be completed.*
+
+---
+
+# Operating System Detection
+
+*To be completed.*
+
+---
+
+# NSE Script Scanning
+
+*To be completed.*
+
+---
+
+# UDP Port Scanning
+
+*To be completed.*
+
+---
+
+# Web Enumeration
+
+*To be completed.*
+
+---
+
+# SMB Enumeration
+
+*To be completed.*
+
+---
+
+# FTP Enumeration
+
+*To be completed.*
+
+---
+
+# SSH Enumeration
+
+*To be completed.*
+
+---
+
+# Vulnerability Assessment
+
+*To be completed.*
+
+---
+
+# Findings Summary
+
+*To be completed.*
+
+---
+
+# Recommendations
+
+*To be completed.*
+
+---
+
+# Conclusion
+
+*To be completed.*
+
+---
+
+# References
+
+- Nmap Official Documentation
+- Kali Linux Documentation
+- Metasploitable3 Documentation
+
+---
+
+# Appendix
+
+Additional screenshots, raw scan outputs, and supporting evidence are stored in the `screenshots/`, `scans/`, and `docs/` directories.
