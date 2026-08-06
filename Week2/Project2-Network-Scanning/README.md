@@ -261,7 +261,60 @@ The service version detection scan successfully identified the applications, sof
 
 # Service Enumeration
 
-*To be completed.*
+## Command Output Screenshot
+
+![Service Enumeration Output Part 1](screenshots/service-enumeration-part1.png)
+
+![Service Enumeration Output Part 2](screenshots/service-enumeration-part2.png)
+
+![Service Enumeration Output Part 3](screenshots/service-enumeration-part3.png)
+
+## Findings
+
+The service enumeration phase was performed to gather additional information about the services identified during the service version detection scan. Nmap default NSE scripts (`-sC`) were used together with service version detection (`-sV`) to identify service configurations, exposed resources, and potential security weaknesses.
+
+| Port | Service | Enumeration Findings |
+|------|---------|---------------------|
+| 21 | FTP | ProFTPD 1.3.5 was identified. No anonymous FTP access information was disclosed during enumeration. |
+| 22 | SSH | SSH host keys were successfully retrieved, including RSA, DSA, ECDSA, and ED25519 keys. |
+| 80 | HTTP | Directory listing was enabled, exposing directories including `/chat/`, `/drupal/`, `/phpmyadmin/`, and files such as `payroll_app.php`. |
+| 445 | SMB | Samba 4.3.11 identified. Guest authentication was detected and SMB message signing was disabled. |
+| 631 | CUPS | CUPS 1.7.2 web interface identified. Potentially risky HTTP PUT method detected. |
+| 3306 | MySQL | MySQL service was reachable, but authentication was required. |
+| 8080 | HTTP | Jetty 8.1.7.v20120910 identified. Server returned HTTP 404 response. |
+
+## Technical Analysis
+
+Service enumeration provides deeper visibility into the configuration and behavior of exposed network services. While service version detection identifies running software, enumeration attempts to discover additional information such as authentication mechanisms, available resources, and security settings.
+
+The scan revealed several important findings, including exposed web directories, SMB security configuration weaknesses, and accessible network services requiring further security assessment.
+
+## Security Assessment
+
+The enumeration results identified multiple security concerns:
+
+- Web directory listing exposes additional files and application paths that may contain sensitive information.
+- SMB guest access and disabled message signing increase the potential for unauthorized access and relay attacks.
+- Exposed administrative applications such as phpMyAdmin should be restricted.
+- Outdated services require vulnerability assessment and patch management.
+
+## Defensive Recommendations
+
+- Disable directory listing on web servers.
+- Restrict access to administrative web applications.
+- Enable SMB message signing where possible.
+- Disable unnecessary guest access.
+- Remove or update outdated services.
+- Apply security patches regularly.
+- Limit exposure of database services to trusted networks only.
+
+## Key Takeaway
+
+Service enumeration provides valuable intelligence about exposed services, configurations, and potential weaknesses. The collected information assists security professionals in prioritizing vulnerability assessments and planning further penetration testing activities.
+
+## Conclusion
+
+The service enumeration phase successfully expanded the understanding of the target system's exposed services. The findings revealed important security issues including web directory exposure, SMB configuration weaknesses, and potentially vulnerable service configurations. These results provide the foundation for further vulnerability analysis and exploitation testing.
 
 ---
 
