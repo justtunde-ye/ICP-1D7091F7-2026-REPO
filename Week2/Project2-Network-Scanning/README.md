@@ -458,7 +458,7 @@ The NSE Script Scanning phase successfully expanded the assessment beyond basic 
 
 ## Command Output Screenshot
 
-![UDP Port Scan Output](screenshots/udp-port-scan.png)
+![UDP Port Scan Output](screenshots/udp-port-scan-part.png)
 
 ## Findings
 
