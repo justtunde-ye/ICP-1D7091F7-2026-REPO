@@ -320,7 +320,51 @@ The service enumeration phase successfully expanded the understanding of the tar
 
 # Operating System Detection
 
-*To be completed.*
+## Command Output Screenshot
+
+![Operating System Detection Output](screenshots/os-detection.png)
+
+## Findings
+
+The operating system detection scan was performed using Nmap's OS fingerprinting capability (`-O`) to identify the underlying operating system and system characteristics of the target host.
+
+The scan confirmed that the target system was active and running multiple exposed services, including FTP, SSH, HTTP, SMB, IPP, MySQL, and an additional HTTP service. Nmap was unable to determine an exact operating system match; however, it identified several high-confidence Linux kernel fingerprints.
+
+| Category | Result |
+|----------|--------|
+| Operating System Family | Linux |
+| Best OS Guess | Linux 3.2 - 4.14 |
+| Confidence Level | 98% |
+| Network Distance | 1 hop |
+| Exact OS Match | Not identified |
+
+## Technical Analysis
+
+Nmap OS detection works by analyzing TCP/IP stack characteristics, including packet responses, TCP window sizes, IP identification patterns, and protocol behavior. These fingerprints are compared against Nmap's operating system database to estimate the target platform.
+
+The scan produced multiple Linux-based fingerprints with the highest confidence indicating a Linux kernel version range between 3.2 and 4.14. The inability to obtain an exact match is likely due to virtualization characteristics and differences between the target system configuration and Nmap's fingerprint database.
+
+## Security Assessment
+
+Identifying the operating system provides important context for vulnerability analysis and helps determine relevant attack paths. The Linux identification confirms that future testing should focus on Linux-specific vulnerabilities, service configurations, and privilege escalation opportunities.
+
+The exposed services identified during OS detection, including SSH, SMB, HTTP, and database services, should be reviewed for outdated software versions and insecure configurations.
+
+## Defensive Recommendations
+
+- Keep the operating system updated with current security patches.
+- Remove unnecessary exposed services.
+- Apply secure configuration standards to network services.
+- Monitor Linux hosts for unauthorized changes.
+- Regularly perform vulnerability assessments.
+
+## Key Takeaway
+
+OS detection provides valuable information about the underlying platform hosting exposed services. Although an exact operating system match was not obtained, the scan successfully identified the target as a Linux-based system, supporting further vulnerability assessment activities.
+
+## Conclusion
+
+The operating system detection scan successfully identified the target host as a Linux-based system with high-confidence kernel fingerprint matches. This information provides additional context for vulnerability research and supports the selection of appropriate penetration testing techniques.
 
 ---
 
