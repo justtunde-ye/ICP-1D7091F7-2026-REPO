@@ -370,7 +370,87 @@ The operating system detection scan successfully identified the target host as a
 
 # NSE Script Scanning
 
-*To be completed.*
+## Command Output Screenshots
+
+### Default NSE Scripts (`-sC -sV`)
+
+![NSE Script Scan Part 1](screenshots/nse-script-scan-part1.png)
+
+![NSE Script Scan Part 2](screenshots/nse-script-scan-part2.png)
+
+![NSE Script Scan Part 3](screenshots/nse-script-scan-part3.png)
+
+### Vulnerability NSE Scripts (`--script vuln`)
+
+![NSE Vulnerability Scan Part 1](screenshots/nse-vulnerability-scan-part1.png)
+
+![NSE Vulnerability Scan Part 2](screenshots/nse-vulnerability-scan-part2.png)
+
+![NSE Vulnerability Scan Part 3](screenshots/nse-vulnerability-scan-part3.png)
+
+![NSE Vulnerability Scan Part 4](screenshots/nse-vulnerability-scan-part4.png)
+
+![NSE Vulnerability Scan Part 5](screenshots/nse-vulnerability-scan-part5.png)
+
+![NSE Vulnerability Scan Part 6](screenshots/nse-vulnerability-scan-part6.png)
+
+![NSE Vulnerability Scan Part 7](screenshots/nse-vulnerability-scan-part7.png)
+
+![NSE Vulnerability Scan Part 8](screenshots/nse-vulnerability-scan-part8.png)
+
+## Findings
+
+The Nmap Scripting Engine (NSE) was used to perform advanced service enumeration and vulnerability identification on the target host. Two separate scans were conducted during this phase. The first used Nmap's default scripts (`-sC`) together with service version detection (`-sV`) to gather additional information about the discovered services. The second executed the `vuln` script category to identify potential security weaknesses and misconfigurations.
+
+The scans confirmed the presence of multiple network services and identified several security-relevant findings, including exposed web directories, SMB security configuration issues, possible Cross-Site Request Forgery (CSRF) vulnerabilities, potential SQL injection entry points, and a likely susceptibility to the Slowloris Denial-of-Service attack (CVE-2007-6750). While several results indicate potential vulnerabilities, they require manual verification before being considered confirmed security issues.
+
+| Port | Service | NSE Findings |
+|------|---------|--------------|
+| 22 | SSH | Retrieved RSA, DSA, ECDSA, and ED25519 host keys. |
+| 80 | Apache HTTP | Directory listing enabled; exposed `/chat/`, `/drupal/`, `/phpmyadmin/`, `/uploads/`, and application files. |
+| 80 | Apache HTTP | Possible CSRF vulnerabilities identified in several web application forms. |
+| 80 | Apache HTTP | Potential SQL injection points detected and require manual validation. |
+| 80 | Apache HTTP | Apache web server identified as likely vulnerable to the Slowloris Denial-of-Service attack (CVE-2007-6750). |
+| 445 | SMB | Guest authentication detected; SMB message signing not required; additional SMB security checks completed. |
+| 631 | CUPS | Administrative web interface discovered with potentially interesting administrative directories. |
+| 8080 | Jetty | Jetty web server also identified as likely vulnerable to the Slowloris attack. |
+
+## Technical Analysis
+
+The Nmap Scripting Engine extends standard port scanning by executing specialized scripts against discovered services. These scripts automate common enumeration and security assessment tasks, including service interrogation, configuration analysis, authentication testing, web application discovery, and vulnerability detection.
+
+The default NSE scripts successfully collected additional information regarding service configuration, exposed resources, authentication mechanisms, and supported protocols. The vulnerability scan further analyzed the identified services against a collection of known security checks, highlighting possible weaknesses that warrant additional manual investigation.
+
+It is important to note that NSE vulnerability scripts are designed as reconnaissance tools. Some reported findings represent potential vulnerabilities based on observed behavior and should be manually validated before being classified as confirmed security issues.
+
+## Security Assessment
+
+The NSE scans identified several security concerns that could increase the attack surface of the target system.
+
+Directory listing on the Apache web server exposes application directories and files that may assist attackers during reconnaissance. Multiple web forms were flagged as potentially vulnerable to Cross-Site Request Forgery attacks, while several application endpoints were identified as possible SQL injection candidates requiring manual verification.
+
+The Apache and Jetty web servers were also reported as likely vulnerable to the Slowloris Denial-of-Service attack (CVE-2007-6750), which attempts to exhaust server resources by maintaining numerous incomplete HTTP connections.
+
+SMB enumeration confirmed guest authentication and identified message signing as not required, weakening protection against certain network-based attacks. Although the SMB vulnerability scripts did not identify some historical Microsoft vulnerabilities, the overall configuration should still be reviewed to ensure compliance with current security best practices.
+
+## Defensive Recommendations
+
+- Disable unnecessary directory listing on web servers.
+- Validate all user input using secure server-side validation techniques.
+- Implement Cross-Site Request Forgery protections for all sensitive forms.
+- Use parameterized queries and prepared statements to mitigate SQL injection.
+- Configure web servers with appropriate connection limits and request timeouts to reduce the risk of Slowloris attacks.
+- Restrict access to administrative interfaces and sensitive web applications.
+- Enable SMB message signing and disable guest access where operationally feasible.
+- Perform regular vulnerability assessments and promptly apply vendor security updates.
+
+## Key Takeaway
+
+NSE Script Scanning significantly enhanced the information gathered during previous scanning phases by identifying service configurations, exposed resources, authentication mechanisms, and potential security weaknesses. These findings provide valuable intelligence for prioritizing remediation efforts and planning subsequent penetration testing activities while emphasizing the importance of manual validation for reported vulnerabilities.
+
+## Conclusion
+
+The NSE Script Scanning phase successfully expanded the assessment beyond basic service identification by combining advanced service enumeration with automated vulnerability detection. The scans identified multiple security-relevant findings, including exposed application resources, SMB configuration weaknesses, potential web application vulnerabilities, and likely susceptibility to the Slowloris Denial-of-Service attack. Although several findings require manual verification, the results provide a strong technical foundation for vulnerability validation and risk-based remediation planning during subsequent stages of the penetration testing engagement.
 
 ---
 
