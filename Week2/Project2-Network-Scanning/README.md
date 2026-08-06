@@ -456,7 +456,69 @@ The NSE Script Scanning phase successfully expanded the assessment beyond basic 
 
 # UDP Port Scanning
 
-*To be completed.*
+## Command Output Screenshot
+
+![UDP Port Scan Output](screenshots/udp-port-scan.png)
+
+## Findings
+
+A UDP scan was performed against the target using Nmap's `-sU` option together with the `--top-ports 20` parameter to examine the twenty most commonly used UDP ports. Unlike TCP, UDP is a connectionless protocol and does not establish a handshake before transmitting data. As a result, UDP scanning often identifies ports as **open|filtered** when no response is received, making definitive state determination more difficult.
+
+The scan identified twenty UDP ports in the **open|filtered** state, including several commonly associated with infrastructure and network services.
+
+| Port | Service | State |
+|------|---------|-------|
+| 53 | DNS | Open\|Filtered |
+| 67 | DHCP Server | Open\|Filtered |
+| 68 | DHCP Client | Open\|Filtered |
+| 69 | TFTP | Open\|Filtered |
+| 123 | NTP | Open\|Filtered |
+| 135 | MSRPC | Open\|Filtered |
+| 137 | NetBIOS Name Service | Open\|Filtered |
+| 138 | NetBIOS Datagram Service | Open\|Filtered |
+| 139 | NetBIOS Session Service | Open\|Filtered |
+| 161 | SNMP | Open\|Filtered |
+| 162 | SNMP Trap | Open\|Filtered |
+| 445 | Microsoft-DS | Open\|Filtered |
+| 500 | ISAKMP | Open\|Filtered |
+| 514 | Syslog | Open\|Filtered |
+| 520 | RIP | Open\|Filtered |
+| 631 | IPP | Open\|Filtered |
+| 1434 | Microsoft SQL Monitor | Open\|Filtered |
+| 1900 | UPnP | Open\|Filtered |
+| 4500 | NAT-T IKE | Open\|Filtered |
+| 49152 | Unknown | Open\|Filtered |
+
+## Technical Analysis
+
+UDP scanning differs significantly from TCP scanning because UDP services generally do not acknowledge probe packets. When no response is received, Nmap classifies the port as **open|filtered**, indicating that the port may be open or that packet filtering is preventing a definitive determination.
+
+The identified ports correspond to services commonly used for network infrastructure, name resolution, time synchronization, file transfer, network management, and device discovery. While these results do not confirm that every service is actively running, they identify UDP services that warrant additional investigation.
+
+## Security Assessment
+
+Several identified UDP services have historically been associated with security risks when improperly configured.
+
+Services such as DNS, TFTP, SNMP, NetBIOS, UPnP, and Syslog may expose sensitive information or increase the attack surface if left accessible from untrusted networks. Because UDP lacks the connection-oriented behavior of TCP, additional enumeration techniques may be required to determine whether these services are actively responding.
+
+The presence of multiple **open|filtered** UDP ports highlights the importance of reviewing firewall rules, service configurations, and network segmentation to minimize unnecessary exposure.
+
+## Defensive Recommendations
+
+- Disable unnecessary UDP services.
+- Restrict UDP services using firewall rules and network segmentation.
+- Secure SNMP using strong community strings or SNMPv3.
+- Disable TFTP unless operationally required.
+- Limit NetBIOS and UPnP exposure to trusted internal networks.
+- Regularly review exposed UDP services during vulnerability assessments.
+
+## Key Takeaway
+
+UDP port scanning complements TCP reconnaissance by identifying additional network services that may not be visible during standard TCP scans. Although UDP results often require further validation, they provide valuable insight into the target's overall attack surface and assist in prioritizing subsequent security assessments.
+
+## Conclusion
+
+The UDP port scan successfully identified several commonly used UDP services in the **open|filtered** state, expanding the understanding of the target's exposed network surface. While the connectionless nature of UDP prevents definitive confirmation of many services, the findings highlight areas requiring further investigation and reinforce the importance of securing unnecessary UDP services through appropriate configuration and network controls.
 
 ---
 
