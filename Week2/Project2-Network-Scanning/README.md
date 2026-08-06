@@ -180,6 +180,84 @@ The TCP SYN scan efficiently identified the target's exposed TCP services while 
 
 The TCP SYN scan successfully identified five open TCP ports and confirmed the availability of several network services on the target system. The information gathered during this phase established the target's network exposure and provided a structured basis for deeper service enumeration and security analysis. The next phase of the assessment will focus on identifying service versions and software banners to determine potential vulnerabilities associated with each exposed service.
 
+# Service Version Detection
+
+## Overview
+
+Following the identification of open TCP ports, a service version detection scan was performed to determine the applications and software versions running on each exposed service. Nmap's service detection engine probes open ports using protocol-specific requests and analyzes the responses to accurately identify running services, software versions, and supported protocols.
+
+This information enables security professionals to identify outdated software, correlate versions with publicly disclosed vulnerabilities (CVEs), and prioritize systems requiring remediation or further investigation during a penetration testing engagement.
+
+## Service Version Detection Overview
+
+![Service Version Detection Overview](images/service-version-overview.png)
+
+## Command Used
+
+```bash
+sudo nmap -sV -T4 192.168.56.101
+```
+## Command Output Screenshot
+
+![Service Version Detection Output](screenshots/service-version-scan.png)
+
+## Findings
+
+The service version detection scan successfully identified the software and version information associated with the exposed network services on the target system. In addition to confirming the previously discovered open ports, the scan revealed specific applications, service banners, and operating system information that support further vulnerability assessment.
+
+| Port | Service | Version |
+|------|---------|---------|
+| 21 | FTP | ProFTPD 1.3.5 |
+| 22 | SSH | OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13 |
+| 80 | HTTP | Apache httpd 2.4.7 (Ubuntu) |
+| 445 | SMB | Samba smbd 3.X–4.X |
+| 631 | IPP | CUPS 1.7 |
+| 3306 | MySQL | MySQL (unauthorized) |
+| 8080 | HTTP | Jetty 8.1.7.v20120910 |
+
+The scan also identified two closed ports (3000 and 8181), confirmed the target hostname as **METASPLOITABLE3-UB1404**, and identified the operating system as a Unix/Linux-based host. The scan completed in approximately **12.85 seconds**.
+
+---
+
+## Technical Analysis
+
+Nmap's service version detection (`-sV`) performs active fingerprinting by sending protocol-specific probes to each discovered open port and analyzing the responses. The collected banners are compared against Nmap's service fingerprint database to accurately identify applications, software versions, and supported protocols.
+
+The scan successfully identified several commonly deployed services, including ProFTPD, OpenSSH, Apache HTTP Server, Samba, CUPS, MySQL, and Jetty. This information provides a detailed inventory of the software running on the target system and establishes the foundation for vulnerability research by correlating identified versions with publicly disclosed Common Vulnerabilities and Exposures (CVEs).
+
+---
+
+## Security Assessment
+
+The service version detection scan identified multiple applications and software versions that should be evaluated against publicly disclosed vulnerabilities and vendor security advisories. Services such as ProFTPD, Apache HTTP Server, Samba, Jetty, and CUPS have historically been associated with security vulnerabilities when running outdated or unsupported versions.
+
+The MySQL service responded with an **"unauthorized"** message, confirming that the database service is reachable over the network. Although authentication prevented access during this phase, unnecessary exposure of database services increases the attack surface and should be carefully reviewed.
+
+The operating system fingerprint also confirmed that the target is a Linux-based host, providing valuable context for subsequent enumeration and vulnerability assessment. While the version detection scan does not directly identify exploitable vulnerabilities, it supplies the critical information required to prioritize further testing.
+
+---
+
+## Defensive Recommendations
+
+- Regularly update exposed services to supported versions with the latest security patches.
+- Disable or remove services that are not required for operational purposes.
+- Restrict access to SSH, MySQL, and SMB using firewall rules or network segmentation.
+- Limit exposure of web applications and administrative interfaces to trusted networks.
+- Perform regular vulnerability assessments to identify outdated software.
+- Continuously monitor exposed services for configuration changes and suspicious activity.
+
+---
+
+## Key Takeaway
+
+Service version detection provides a detailed inventory of the software running on exposed network services. This information enables security professionals to correlate identified versions with known vulnerabilities, prioritize remediation efforts, and focus subsequent penetration testing activities on the systems presenting the highest potential risk.
+
+---
+
+## Conclusion
+
+The service version detection scan successfully identified the applications, software versions, and operating system information associated with the target's exposed services. These findings provide the technical foundation required for vulnerability assessment, service-specific enumeration, and informed security decision-making during the remaining phases of the penetration testing engagement.
+
 
 # Service Enumeration
 
