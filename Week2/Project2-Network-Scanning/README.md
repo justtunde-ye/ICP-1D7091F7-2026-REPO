@@ -528,7 +528,7 @@ The UDP port scan successfully identified several commonly used UDP services in 
 
 ### WhatWeb Technology Identification
 
-![WhatWeb Output](screenshots/web-enumeration-whatweb.png)
+![WhatWeb Output](screenshots/web-enumeration-browser2.png)
 
 ### Nikto Web Server Scan
 
@@ -540,7 +540,9 @@ The UDP port scan successfully identified several commonly used UDP services in 
 
 ### Gobuster Directory Enumeration
 
-![Gobuster Output](screenshots/web-enumeration-gobuster.png)
+![Gobuster Output Part 1](screenshots/web-enumeration-gobuster1.png)
+
+![Gobuster Output Part 2](screenshots/web-enumeration-gobuster2.png)
 
 ### Browser Verification
 
