@@ -608,15 +608,108 @@ The web enumeration phase provided a detailed understanding of the target's web 
 
 ---
 
-# SMB Enumeration
-
-*To be completed.*
-
 ---
 
 # SMB Enumeration
 
-*To be completed.*
+## Command Output Screenshots
+
+### Enum4linux SMB Enumeration
+
+![Enum4linux SMB Enumeration Part 1](screenshots/smb-enumeration-enum4linux-part1.png)
+
+![Enum4linux SMB Enumeration Part 2](screenshots/smb-enumeration-enum4linux-part2.png)
+
+![Enum4linux SMB Enumeration Part 3](screenshots/smb-enumeration-enum4linux-part3.png)
+
+![Enum4linux SMB Enumeration Part 4](screenshots/smb-enumeration-enum4linux-part4.png)
+
+![Enum4linux SMB Enumeration Part 5](screenshots/smb-enumeration-enum4linux-part5.png)
+
+![Enum4linux SMB Enumeration Part 6](screenshots/smb-enumeration-enum4linux-part6.png)
+
+![Enum4linux SMB Enumeration Part 7](screenshots/smb-enumeration-enum4linux-part7.png)
+
+
+### SMB Share Enumeration
+
+![SMB Share Enumeration Part 1](screenshots/smb-enumeration-shares1.png)
+
+![SMB Share Enumeration Part 2](screenshots/smb-enumeration-shares2.png)
+
+
+### SMB User Enumeration
+
+![SMB User Enumeration](screenshots/smb-enumeration-users.png)
+
+
+### SMB OS Discovery
+
+![SMB OS Discovery](screenshots/smb-enumeration-os-discovery.png)
+
+
+## Findings
+
+SMB enumeration was performed against the target system to identify exposed file-sharing services, available network shares, user accounts, operating system information, and potential security weaknesses within the SMB configuration.
+
+The assessment identified that the target was running Samba services on a Metasploitable3 Ubuntu system. The SMB service was accessible through TCP port 445 and revealed information about the host, including the computer name, operating system details, available shares, and local user accounts.
+
+Enum4linux successfully identified the SMB environment, revealing the hostname `metasploitable3-ub1404`, the domain/workgroup information, and the local user account `chewbacca`. The assessment also identified available SMB shares including `IPC$`, `print$`, and `public`.
+
+The SMB configuration allowed anonymous session enumeration, which enabled the extraction of system information without valid credentials. Additionally, the password policy configuration revealed weak security settings, including a minimum password length of five characters and disabled password complexity requirements.
+
+
+## SMB Enumeration Findings
+
+| Finding | Description | Risk |
+|---------|-------------|------|
+| SMB Service Exposure | Samba service accessible on TCP port 445 | Medium |
+| Anonymous SMB Access | SMB allows session enumeration without credentials | High |
+| User Enumeration | Local account `chewbacca` identified | Medium |
+| SMB Shares Discovered | IPC$, print$, and public shares identified | Medium |
+| Weak Password Policy | Minimum password length set to 5 characters | High |
+| Password Complexity Disabled | Weak authentication requirements configured | High |
+| System Information Disclosure | Hostname and OS information exposed | Medium |
+
+
+## Technical Analysis
+
+SMB enumeration provides valuable information about file-sharing environments by identifying available shares, user accounts, authentication settings, and system configuration details.
+
+The combination of Enum4linux and Nmap SMB NSE scripts provided detailed visibility into the target SMB implementation. The enumeration confirmed that Samba was running on Ubuntu and exposed multiple pieces of information that could assist an attacker during further reconnaissance activities.
+
+The ability to enumerate users and system information without authentication increases the risk of targeted attacks, including password spraying, brute-force attempts, and unauthorized access attempts against valid accounts.
+
+
+## Security Assessment
+
+The SMB assessment identified several security concerns:
+
+- Anonymous SMB sessions allow unauthorized users to gather system information.
+- Exposed SMB shares increase the available attack surface.
+- Valid usernames can be identified without authentication.
+- Weak password requirements increase the likelihood of successful credential attacks.
+- SMB services should not be exposed unnecessarily to untrusted networks.
+
+
+## Defensive Recommendations
+
+- Disable anonymous SMB access and require authentication.
+- Enforce strong password policies with increased minimum length and complexity requirements.
+- Restrict SMB access using firewall rules and network segmentation.
+- Remove unnecessary SMB shares and limit permissions using the principle of least privilege.
+- Regularly update Samba services with security patches.
+- Monitor SMB authentication activity for suspicious login attempts.
+
+
+## Key Takeaway
+
+SMB enumeration successfully identified exposed shares, user accounts, system information, and authentication weaknesses within the target environment. These findings provide important intelligence for later vulnerability assessment and exploitation testing phases.
+
+
+## Conclusion
+
+The SMB enumeration phase revealed multiple security weaknesses within the target's file-sharing infrastructure. Anonymous enumeration, weak password policies, and exposed SMB information increase the potential attack surface. These findings should be addressed through stronger access controls, improved authentication policies, and secure SMB configuration practices.
 
 ---
 
