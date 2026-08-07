@@ -524,6 +524,93 @@ The UDP port scan successfully identified several commonly used UDP services in 
 
 # Web Enumeration
 
+## Command Output Screenshots
+
+### WhatWeb Technology Identification
+
+![WhatWeb Output](screenshots/web-enumeration-whatweb.png)
+
+### Nikto Web Server Scan
+
+![Nikto Output Part 1](screenshots/web-enumeration-nikto-part1.png)
+
+![Nikto Output Part 2](screenshots/web-enumeration-nikto-part2.png)
+
+![Nikto Output Part 3](screenshots/web-enumeration-nikto-part3.png)
+
+### Gobuster Directory Enumeration
+
+![Gobuster Output](screenshots/web-enumeration-gobuster.png)
+
+### Browser Verification
+
+![Web Root](screenshots/web-enumeration-browser1.png)
+
+![Chat Application](screenshots/web-enumeration-browser2.png)
+
+![Drupal Application](screenshots/web-enumeration-browser3.png)
+
+![phpMyAdmin Interface](screenshots/web-enumeration-browser4.png)
+
+## Findings
+
+Web enumeration was performed against the target's HTTP service to identify web technologies, exposed resources, hidden directories, administrative interfaces, and potential security weaknesses. Multiple enumeration tools, including WhatWeb, Nikto, Gobuster, and manual browser verification, were used to gather comprehensive information about the web server.
+
+The enumeration identified an Apache 2.4.7 web server running on Ubuntu Linux with directory indexing enabled. Several publicly accessible applications and directories were discovered, including a chat application, a Drupal content management system, phpMyAdmin, and an uploads directory. Additional findings included outdated software versions, missing HTTP security headers, and exposed application resources requiring further security assessment.
+
+## Web Enumeration Findings
+
+| Finding | Description | Risk |
+|---------|-------------|------|
+| Apache Web Server | Apache HTTP Server 2.4.7 running on Ubuntu Linux | Medium |
+| Directory Listing | Root directory indexing enabled | Medium |
+| Chat Application | Publicly accessible `/chat/` directory | Medium |
+| Drupal CMS | Drupal application identified | Medium |
+| phpMyAdmin | Administrative database interface exposed | High |
+| Uploads Directory | Public `/uploads/` directory discovered | Medium |
+| Missing Security Headers | Multiple recommended HTTP security headers absent | Medium |
+| Outdated Apache Version | Apache 2.4.7 identified as outdated | High |
+| PHP Version Disclosure | PHP/5.4.5 disclosed through HTTP headers | Medium |
+
+## Technical Analysis
+
+Web enumeration expands the understanding of exposed web services by identifying application technologies, administrative interfaces, hidden resources, and security misconfigurations. Unlike basic service detection, web enumeration provides detailed information about the web application's attack surface and identifies components that may require additional testing during later phases of a penetration test.
+
+The combination of WhatWeb, Nikto, Gobuster, and manual verification confirmed the presence of multiple web applications and administrative interfaces while identifying several configuration weaknesses that could increase the target's exposure to attack.
+
+## Security Assessment
+
+The web enumeration phase identified several security concerns that should be addressed:
+
+- Directory indexing exposes application files and directory structures to unauthorized users.
+- The Apache web server is outdated and should be updated to a supported version.
+- Missing HTTP security headers reduce protection against common web-based attacks.
+- Public access to phpMyAdmin increases the risk of unauthorized database access.
+- Publicly accessible application directories increase the overall attack surface.
+- The uploads directory should be reviewed to ensure file upload restrictions are properly enforced.
+
+## Defensive Recommendations
+
+- Disable directory indexing on the web server.
+- Upgrade Apache to a currently supported version.
+- Implement recommended HTTP security headers, including Content-Security-Policy, Strict-Transport-Security, Referrer-Policy, Permissions-Policy, and X-Content-Type-Options.
+- Restrict access to phpMyAdmin using authentication and network-based access controls.
+- Review publicly accessible directories and remove unnecessary resources.
+- Validate and restrict file uploads within the uploads directory.
+- Regularly perform web application vulnerability assessments and security updates.
+
+## Key Takeaway
+
+Web enumeration successfully identified the technologies, applications, and exposed resources hosted by the target web server. The results revealed multiple configuration weaknesses and administrative interfaces that warrant further investigation during subsequent vulnerability assessment and penetration testing activities.
+
+## Conclusion
+
+The web enumeration phase provided a detailed understanding of the target's web infrastructure and identified several areas requiring remediation, including directory indexing, outdated software, missing security headers, and exposed administrative interfaces. These findings establish a solid foundation for targeted vulnerability assessment and exploitation testing during the remaining stages of the penetration testing engagement.
+
+---
+
+# SMB Enumeration
+
 *To be completed.*
 
 ---
