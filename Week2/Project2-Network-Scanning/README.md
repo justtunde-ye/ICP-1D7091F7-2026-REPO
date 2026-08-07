@@ -715,7 +715,173 @@ The SMB enumeration phase revealed multiple security weaknesses within the targe
 
 # FTP Enumeration
 
-*To be completed.*
+## Overview
+
+FTP enumeration was performed against the target system to identify the running FTP service, collect service banner information, analyze authentication mechanisms, enumerate accessible files, and identify potential security weaknesses.
+
+The FTP service was identified during the service enumeration phase as running on TCP port 21. The assessment included banner grabbing, authentication testing, directory listing, and Nmap FTP script enumeration.
+
+---
+
+## FTP Service Banner Identification
+
+### Command Executed
+
+```bash
+nc -nv 192.168.56.101 21Results
+
+The FTP service disclosed the following banner:
+
+220 ProFTPD 1.3.5 Server (ProFTPD Default Installation) [192.168.56.101]
+Analysis
+
+The banner identified the target as running ProFTPD 1.3.5.
+
+Service banner disclosure provides valuable information during penetration testing because identified software versions can be compared against publicly known vulnerabilities and security advisories.
+
+FTP Authentication Testing
+Command Executed
+ftp 192.168.56.101
+Screenshot
+
+Anonymous Login Testing
+
+Anonymous authentication was tested using:
+
+Username: anonymous
+
+The FTP server responded:
+
+331 Anonymous login ok, send your complete email address as your password
+
+However, authentication failed:
+
+530 Login incorrect
+Valid Credential Authentication
+
+Further testing identified valid credentials:
+
+Username: vagrant
+Password: vagrant
+
+The server successfully authenticated:
+
+230 User vagrant logged in
+Analysis
+
+The FTP service allowed authentication using default credentials.
+
+The presence of default credentials represents a critical security weakness because unauthorized users could gain access to FTP resources and potentially use the account for further exploitation activities.
+
+FTP Directory Listing
+Command Executed
+
+After successful authentication:
+
+pwd
+ls
+dir
+Screenshot
+
+Results
+
+The authenticated FTP session revealed:
+
+Remote directory: /home/vagrant
+
+The directory contained:
+
+-rw-r--r--   1 vagrant vagrant 86562816 Oct 29 2020 VBoxGuestAdditions.iso
+
+The system type was identified:
+
+215 UNIX Type: L8
+Analysis
+
+Authenticated FTP access allowed directory enumeration and file discovery.
+
+The exposed file demonstrates that authenticated users can access resources stored within the FTP directory.
+
+Nmap FTP Script Enumeration
+Command Executed
+sudo nmap --script ftp-anon,ftp-syst -p21 192.168.56.101
+Screenshot
+
+Results
+PORT   STATE SERVICE
+21/tcp open  ftp
+Analysis
+
+The Nmap FTP scripts confirmed that the FTP service was active on TCP port 21.
+
+No additional information was returned from the automated enumeration scripts.
+
+FTP Vulnerability Scan
+Command Executed
+sudo nmap --script ftp-vuln* -p21 192.168.56.101
+Screenshot
+
+Results
+PORT   STATE SERVICE
+21/tcp open  ftp
+Analysis
+
+The automated FTP vulnerability scripts did not identify any specific FTP vulnerabilities.
+
+However, manual authentication testing identified a major security weakness:
+
+vagrant:vagrant
+
+The use of default credentials presents a critical security risk.
+
+FTP Enumeration Findings
+Finding	Description	Risk Level
+FTP Service Exposure	FTP service accessible on TCP port 21	Medium
+ProFTPD Version Disclosure	FTP banner revealed ProFTPD 1.3.5	Medium
+Default Credentials	Successful authentication using vagrant:vagrant	Critical
+Authenticated FTP Access	Remote FTP access obtained using valid credentials	High
+Anonymous Authentication	Anonymous login option available but restricted	Medium
+File Exposure	Files accessible within /home/vagrant directory	Medium
+Technical Analysis
+
+FTP enumeration identified the target system as running ProFTPD 1.3.5 on TCP port 21.
+
+The FTP banner revealed service version information. Authentication testing showed that anonymous access was restricted; however, valid credentials were discovered:
+
+Username: vagrant
+Password: vagrant
+
+Successful authentication provided access to the FTP service and allowed directory enumeration.
+
+The use of default credentials significantly increases the risk of unauthorized access because attackers could retrieve files, upload malicious content, or use the account as a foothold for further attacks.
+
+Security Assessment
+
+The FTP service presents the following security concerns:
+
+Default credentials allow unauthorized authentication.
+FTP transmits credentials without encryption.
+Service version information is exposed through the FTP banner.
+Authenticated users can access files stored within FTP directories.
+Exposed FTP services increase the overall attack surface.
+Recommendations
+Remove all default credentials from FTP accounts.
+Implement strong password policies.
+Disable unused FTP accounts.
+Replace FTP with secure alternatives such as SFTP or FTPS.
+Restrict FTP access using firewall rules and access controls.
+Disable anonymous authentication where not required.
+Upgrade ProFTPD to a supported version.
+Regularly audit FTP directories for sensitive files.
+Monitor FTP authentication logs for suspicious activity.
+Conclusion
+
+The FTP enumeration phase successfully identified the target FTP service, software version, authentication configuration, and accessible resources.
+
+The most significant discovery was successful authentication using default credentials (vagrant:vagrant), which provided remote access to the FTP server.
+
+Although automated Nmap FTP vulnerability scans did not identify additional vulnerabilities, weak credential management created a critical security weakness. Proper credential management, secure file transfer protocols, and regular vulnerability assessments are required to reduce the risk of unauthorized access.
+
 
 ---
 
