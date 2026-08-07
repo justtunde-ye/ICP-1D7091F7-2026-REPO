@@ -1193,9 +1193,156 @@ No direct exploitable SSH vulnerability was confirmed through the enumeration pe
 
 ---
 
-# Vulnerability Assessment
+# 9. Vulnerability Assessment
 
-*To be completed.*
+## 9.1 Overview
+
+A vulnerability assessment was performed against the Metasploitable target using Nmap's NSE vulnerability detection scripts. The assessment focused on the TCP services identified during the previous scanning and enumeration phases: FTP (21), SSH (22), HTTP (80), SMB (445), and IPP (631).
+
+The purpose of this assessment was to identify known or potentially exploitable weaknesses in exposed services and web applications without performing exploitation. The results provide an initial indication of vulnerabilities that would require further validation during a controlled penetration testing engagement.
+
+## Vulnerability Assessment Overview
+
+The vulnerability assessment workflow consisted of:
+
+1. Identifying exposed services through TCP scanning.
+2. Running Nmap vulnerability detection scripts against the identified services.
+3. Reviewing the returned vulnerability indicators and affected application paths.
+4. Assessing the potential security impact.
+5. Identifying appropriate defensive recommendations.
+
+## 9.2 Vulnerability Assessment Scan
+
+### Command Used
+
+The following Nmap NSE vulnerability detection scan was performed against the identified TCP services:
+
+```bash
+sudo nmap --script vuln -p21,22,80,445,631 192.168.56.101
+```
+
+The `--script vuln` option instructs Nmap to run vulnerability detection scripts against the target. The `-p21,22,80,445,631` option limits the assessment to the previously identified FTP, SSH, HTTP, SMB, and IPP services.
+
+### Scan Output
+
+The vulnerability assessment returned several security findings, primarily affecting the HTTP and SMB services.
+
+![Nmap Vulnerability Assessment - Part 1](screenshots/vulnerability-assessment-nmap-vuln1.png)
+
+**Figure 9.1:** Nmap vulnerability assessment output showing HTTP-related security findings.
+
+![Nmap Vulnerability Assessment - Part 2](screenshots/vulnerability-assessment-nmap-vuln2.png)
+
+**Figure 9.2:** Nmap vulnerability assessment output showing additional HTTP findings.
+
+![Nmap Vulnerability Assessment - Part 3](screenshots/vulnerability-assessment-nmap-vuln3.png)
+
+**Figure 9.3:** Nmap vulnerability assessment output showing Slowloris and HTTP enumeration findings.
+
+![Nmap Vulnerability Assessment - Part 4](screenshots/vulnerability-assessment-nmap-vuln4.png)
+
+**Figure 9.4:** Nmap vulnerability assessment output showing SMB vulnerability results.
+
+## 9.3 Findings
+
+The vulnerability assessment identified several security weaknesses and potential vulnerabilities affecting the target system. The most significant findings were associated with the HTTP and SMB services.
+
+### 9.3.1 Cross-Site Request Forgery (CSRF)
+
+The `http-csrf` NSE script identified several web forms that may be susceptible to Cross-Site Request Forgery (CSRF). Potentially affected locations included:
+
+* `/payroll_app.php`
+* `/chat/`
+* `/chat/index.php`
+* `/drupal/`
+* `/drupal/?q=user/register`
+* Drupal login forms
+
+These findings indicate that some web forms may not implement adequate anti-CSRF protections. The results should be manually validated because Nmap identifies potential CSRF conditions rather than confirming exploitability.
+
+### 9.3.2 Possible SQL Injection
+
+The `http-sql-injection` NSE script reported possible SQL injection conditions in HTTP query parameters.
+
+These results should be treated as potential indicators rather than confirmed SQL injection vulnerabilities. Manual validation would be required to determine whether the identified parameters can actually influence backend database queries.
+
+### 9.3.3 Slowloris Denial-of-Service
+
+The HTTP service was reported as **LIKELY VULNERABLE** to the Slowloris denial-of-service condition associated with **CVE-2007-6750**.
+
+Slowloris is an application-layer denial-of-service technique that attempts to maintain multiple incomplete HTTP connections by sending requests slowly. This can consume server resources and potentially prevent legitimate users from accessing the web application.
+
+### 9.3.4 HTTP Information Exposure
+
+The `http-enum` NSE script identified several accessible web resources, including:
+
+* Root directory listing
+* `/test.php`
+* `/phpmyadmin/`
+* `/uploads/`
+
+Exposed directories, administrative interfaces, and testing files can provide useful information to an attacker and may increase the attack surface of the web server.
+
+### 9.3.5 SMB Registry Service Denial-of-Service
+
+The `smb-vuln-regsvc-dos` NSE script reported the SMB service as **VULNERABLE** to a denial-of-service condition affecting the Windows `regsvc` service.
+
+The assessment also checked for MS10-061 and MS10-054 vulnerabilities. Both were reported as **false**, indicating that those specific vulnerabilities were not detected during this scan.
+
+## 9.4 Technical Analysis
+
+The vulnerability assessment demonstrates that the target exposes multiple services with security weaknesses. The most significant findings were associated with the HTTP and SMB services.
+
+The HTTP service presented several potential application-layer weaknesses, including CSRF indicators, possible SQL injection conditions, and a likely Slowloris susceptibility. The presence of directory listings and accessible resources such as phpMyAdmin and an uploads directory also increases information exposure.
+
+The SMB assessment identified a potential denial-of-service condition associated with the `regsvc` service. Although this finding does not directly demonstrate remote code execution or unauthorized access, successful exploitation could affect service availability.
+
+It is important to distinguish between automated vulnerability indicators and confirmed vulnerabilities. Nmap's NSE vulnerability scripts use automated detection techniques and may produce findings that require additional manual verification. Therefore, the results from this assessment should be considered an initial vulnerability assessment rather than proof of exploitability.
+
+Further testing in an authorized laboratory environment would be required to validate the identified findings, determine their actual impact, and establish appropriate severity ratings.
+
+## 9.5 Security Observations
+
+The vulnerability assessment identified several weaknesses that could increase the overall attack surface of the target system.
+
+The HTTP service represents the most significant area of concern. Potential CSRF and SQL injection conditions indicate weaknesses that could affect the security of web applications hosted on the server. The likely Slowloris condition also introduces a potential availability risk.
+
+The exposure of directory listings, phpMyAdmin, test files, and an uploads directory provides additional information that could assist an attacker during reconnaissance. Administrative and development resources should not be unnecessarily exposed to untrusted users.
+
+The SMB finding further demonstrates the risk associated with maintaining legacy or unnecessary network services. Vulnerable services should be patched, disabled, or appropriately isolated where possible.
+
+Overall, the findings indicate that the target would benefit from stronger application security controls, service hardening, access restrictions, patch management, and removal of unnecessary legacy services.
+
+## 9.6 Defensive Recommendations
+
+The following defensive measures are recommended based on the findings identified during the vulnerability assessment:
+
+* **Implement CSRF protection:** Use unpredictable anti-CSRF tokens for state-changing web forms and validate requests on the server side.
+* **Prevent SQL injection:** Use parameterized queries or prepared statements and validate all user-controlled input before processing it.
+* **Harden the web server:** Apply current security updates and configure Apache to reduce exposure to slow HTTP request attacks such as Slowloris.
+* **Disable directory listing:** Prevent unnecessary directory browsing and restrict access to files and directories that do not need to be publicly accessible.
+* **Remove unnecessary resources:** Remove test files such as `/test.php` and restrict access to administrative interfaces such as phpMyAdmin.
+* **Secure upload directories:** Restrict access to `/uploads/` and prevent uploaded files from being executed as server-side code.
+* **Harden SMB:** Disable unnecessary SMB services and apply appropriate security updates to vulnerable services.
+* **Apply network access controls:** Use firewall rules and network segmentation to restrict access to administrative and legacy services.
+* **Strengthen authentication:** Disable unnecessary password-based authentication where appropriate and enforce strong credentials and access controls.
+* **Maintain regular patching:** Keep the operating system, web server, applications, and network services updated with supported security releases.
+* **Validate automated findings:** Perform controlled manual verification of vulnerability indicators before assigning final severity or remediation priority.
+
+## 9.7 Key Takeaway
+
+The vulnerability assessment identified multiple security weaknesses across the target's HTTP and SMB services. The most notable findings included potential CSRF and SQL injection conditions, a likely Slowloris denial-of-service vulnerability, exposed web resources, and an SMB denial-of-service vulnerability.
+
+These findings demonstrate the importance of combining automated vulnerability detection with manual validation, secure application development, service hardening, patch management, and appropriate access controls.
+
+## 9.8 Conclusion
+
+The Nmap NSE vulnerability assessment provided an additional layer of security analysis following host discovery, port scanning, service identification, and enumeration. The assessment identified several potential weaknesses that could affect the confidentiality, integrity, or availability of the target system.
+
+The results also demonstrate the value of vulnerability scanning as part of a structured security assessment. Automated NSE scripts can efficiently identify potential security issues across exposed services, while manual validation is necessary to confirm exploitability and determine the actual risk associated with each finding.
+
+Overall, the assessment provided a clear picture of the target's security weaknesses and highlighted areas requiring remediation, particularly the HTTP and SMB services. In a real-world penetration testing engagement, the identified findings would be validated, prioritized according to risk, and followed by appropriate remediation and retesting.
+
 
 ---
 
