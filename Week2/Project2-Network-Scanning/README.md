@@ -944,7 +944,252 @@ The FTP enumeration phase provided valuable insight into the target's FTP config
 
 # SSH Enumeration
 
-*To be completed.*
+## Overview
+
+SSH enumeration was performed against the target system to identify the SSH service version, enumerate supported cryptographic algorithms, collect server host key information, and determine the authentication methods supported by the service.
+
+The SSH service was identified on TCP port 22 during the service enumeration phase. Additional Nmap NSE scripts were used to examine SSH host keys, key exchange algorithms, encryption algorithms, MAC algorithms, and supported authentication mechanisms.
+
+---
+
+## Command Output Screenshots
+
+### SSH Service Identification
+
+**Command Executed**
+
+```bash
+sudo nmap -p22 -sV 192.168.56.101
+```
+
+**Screenshot**
+
+![SSH Service Identification](screenshots/ssh-enumeration-service.png)
+
+**Results**
+
+```text
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13 (Ubuntu Linux; protocol 2.0)
+```
+
+**Analysis**
+
+The target was confirmed to have SSH exposed on TCP port 22. The service was identified as **OpenSSH 6.6.1p1 Ubuntu 2ubuntu2.13** running on a Linux system.
+
+The exposed service version provides useful information for security assessment because older software versions may contain known vulnerabilities or support outdated cryptographic configurations.
+
+---
+
+### SSH Host Key and Algorithm Enumeration
+
+**Command Executed**
+
+```bash
+sudo nmap --script ssh-hostkey,ssh2-enum-algos -p22 192.168.56.101
+```
+
+**Screenshots**
+
+![SSH Host Key and Algorithm Enumeration](screenshots/ssh-enumeration-hostkey-algos.png)
+
+![SSH Host Key and Algorithm Enumeration Part 1](screenshots/ssh-enumeration-hostkey-algos1.png)
+
+![SSH Host Key and Algorithm Enumeration Part 2](screenshots/ssh-enumeration-hostkey-algos2.png)
+
+![SSH Host Key and Algorithm Enumeration Part 3](screenshots/ssh-enumeration-hostkey-algos3.png)
+
+**Results**
+
+The SSH service exposed the following key exchange algorithms:
+
+```text
+curve25519-sha256@libssh.org
+ecdh-sha2-nistp256
+ecdh-sha2-nistp384
+ecdh-sha2-nistp521
+diffie-hellman-group-exchange-sha256
+diffie-hellman-group-exchange-sha1
+diffie-hellman-group14-sha1
+diffie-hellman-group1-sha1
+```
+
+The server supported the following host key algorithms:
+
+```text
+ssh-rsa
+ssh-dss
+ecdsa-sha2-nistp256
+ssh-ed25519
+```
+
+The service also advertised multiple encryption algorithms, including:
+
+```text
+aes128-ctr
+aes192-ctr
+aes256-ctr
+arcfour256
+arcfour128
+aes128-gcm@openssh.com
+aes256-gcm@openssh.com
+chacha20-poly1305@openssh.com
+aes128-cbc
+3des-cbc
+blowfish-cbc
+cast128-cbc
+aes192-cbc
+aes256-cbc
+arcfour
+rijndael-cbc@lysator.liu.se
+```
+
+Multiple MAC algorithms were also supported, including MD5- and SHA-1-based options:
+
+```text
+hmac-md5
+hmac-sha1
+hmac-md5-96
+hmac-sha1-96
+hmac-sha2-256
+hmac-sha2-512
+hmac-ripemd160
+```
+
+The server exposed four SSH host keys:
+
+```text
+1024-bit DSA
+2048-bit RSA
+256-bit ECDSA
+256-bit ED25519
+```
+
+**Analysis**
+
+The SSH configuration supports several modern cryptographic algorithms, including ED25519, ECDSA, AES-GCM, ChaCha20-Poly1305, and Curve25519.
+
+However, the service also supports several legacy algorithms that should be considered weak or deprecated in modern SSH configurations. These include:
+
+- `diffie-hellman-group1-sha1`
+- `diffie-hellman-group14-sha1`
+- `diffie-hellman-group-exchange-sha1`
+- `ssh-dss`
+- `arcfour`
+- Multiple CBC-mode encryption algorithms
+- MD5-based MAC algorithms
+- SHA-1-based MAC algorithms
+
+The presence of these legacy algorithms increases the cryptographic attack surface and may allow clients to negotiate weaker security options if the server does not enforce modern algorithm preferences.
+
+---
+
+### SSH Authentication Methods
+
+**Command Executed**
+
+```bash
+sudo nmap --script ssh-auth-methods -p22 192.168.56.101
+```
+
+**Screenshot**
+
+![SSH Authentication Methods](screenshots/ssh-enumeration-auth-methods.png)
+
+**Results**
+
+The SSH service reported the following supported authentication methods:
+
+```text
+Supported authentication methods:
+publickey
+password
+```
+
+**Analysis**
+
+The SSH service supports both public-key and password-based authentication.
+
+Password authentication can increase the risk of brute-force or password-guessing attacks if weak credentials, default passwords, or insufficient account lockout controls are present.
+
+Public-key authentication provides a stronger authentication mechanism when properly configured and protected with appropriate key management practices.
+
+---
+
+## SSH Enumeration Findings
+
+| Finding | Description | Risk |
+|---------|-------------|------|
+| SSH Service Exposure | SSH accessible on TCP port 22 | Medium |
+| OpenSSH Version Disclosure | OpenSSH 6.6.1p1 Ubuntu version identified | Medium |
+| Legacy Key Exchange | SHA-1 based Diffie-Hellman algorithms supported | Medium |
+| Weak Host Key Algorithm | DSA (`ssh-dss`) supported | Medium |
+| Legacy Encryption | RC4 and CBC-based ciphers supported | Medium |
+| Weak MAC Algorithms | MD5 and SHA-1 based MAC algorithms supported | Medium |
+| Password Authentication | Password-based SSH authentication enabled | Medium |
+| Public-Key Authentication | Public-key authentication supported | Low |
+| Host Key Exposure | DSA, RSA, ECDSA, and ED25519 host keys identified | Informational |
+
+---
+
+## Technical Analysis
+
+SSH enumeration identified OpenSSH 6.6.1p1 running on TCP port 22. The service provides several modern cryptographic options but also maintains compatibility with a number of legacy algorithms.
+
+The most notable configuration weaknesses include support for SHA-1 based key exchange algorithms, DSA host keys, RC4 encryption, CBC-mode ciphers, and MD5-based MAC algorithms. These algorithms are considered outdated and should generally be removed from modern SSH configurations where compatibility requirements do not justify their use.
+
+The SSH service also supports password authentication. Password authentication is not inherently vulnerable, but it can increase exposure to credential-based attacks when combined with weak passwords, default credentials, unrestricted network access, or inadequate authentication controls.
+
+No direct SSH vulnerability was established through these enumeration commands alone. The findings should therefore be treated as configuration weaknesses requiring further assessment rather than confirmed exploitable vulnerabilities.
+
+---
+
+## Security Assessment
+
+The SSH service presents the following security concerns:
+
+- OpenSSH version information is disclosed.
+- Legacy SHA-1 based key exchange algorithms are enabled.
+- DSA host key support is enabled.
+- RC4 encryption algorithms are supported.
+- Multiple CBC-mode encryption algorithms are enabled.
+- MD5 and SHA-1 based MAC algorithms are supported.
+- Password authentication is enabled.
+- The SSH service is exposed on the network and therefore represents an accessible authentication surface.
+
+---
+
+## Defensive Recommendations
+
+- Upgrade OpenSSH to a currently supported version.
+- Disable deprecated SHA-1 based key exchange algorithms.
+- Disable `ssh-dss` and other obsolete host key algorithms.
+- Disable RC4/Arcfour encryption algorithms.
+- Disable unnecessary CBC-mode ciphers.
+- Remove MD5-based MAC algorithms.
+- Remove weak SHA-1 based MAC algorithms where compatibility permits.
+- Prefer modern algorithms such as ED25519, Curve25519, AES-GCM, and ChaCha20-Poly1305.
+- Use strong passwords and enforce appropriate password policies.
+- Consider disabling password authentication where public-key authentication is practical.
+- Restrict SSH access to authorized hosts and management networks.
+- Implement rate limiting, account lockout controls, or equivalent protections against repeated authentication attempts.
+- Monitor SSH authentication logs for suspicious activity.
+
+---
+
+## Key Takeaway
+
+SSH enumeration confirmed that the target exposes OpenSSH 6.6.1p1 on TCP port 22 and supports both password and public-key authentication. Although modern cryptographic algorithms are available, the service also supports numerous legacy algorithms that increase the attack surface and should be disabled in a hardened environment.
+
+---
+
+## Conclusion
+
+The SSH enumeration phase provided detailed information about the target's SSH service, cryptographic configuration, host keys, and authentication mechanisms.
+
+The assessment identified several security configuration weaknesses, particularly the continued support for legacy SHA-1, MD5, DSA, RC4, and CBC-based algorithms. Password authentication was also enabled, increasing the importance of strong credential controls and access restrictions.
+
+No direct exploitable SSH vulnerability was confirmed through the enumeration performed. However, upgrading the SSH service and removing deprecated cryptographic algorithms would significantly improve the security posture of the target.
 
 ---
 
