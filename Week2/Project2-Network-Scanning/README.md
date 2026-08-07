@@ -528,7 +528,7 @@ The UDP port scan successfully identified several commonly used UDP services in 
 
 ### WhatWeb Technology Identification
 
-![WhatWeb Output](screenshots/web-enumeration-browser2.png)
+![WhatWeb Output](screenshots/web-enumeration-whatweb.png)
 
 ### Nikto Web Server Scan
 
