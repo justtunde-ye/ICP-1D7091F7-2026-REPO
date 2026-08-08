@@ -56,11 +56,43 @@ All testing was performed in a controlled lab environment with authorization. In
 
 # Executive Summary
 
-*To be completed as the assessment progresses.*
+This assessment documents a structured network scanning and enumeration exercise performed against an intentionally vulnerable Metasploitable3 laboratory system. The objective was to identify active services, determine exposed network ports, enumerate service information, identify the underlying operating system, and assess potential security weaknesses within the authorized laboratory environment.
 
-# Engagement Overview
+The assessment identified several exposed services, including FTP, SSH, HTTP, SMB, and IPP. Further enumeration revealed legacy service versions, exposed web resources, directory listings, administrative interfaces, weak authentication configurations, and potentially insecure cryptographic settings. Nmap NSE vulnerability assessment also identified potential CSRF and SQL injection conditions, a likely Slowloris denial-of-service condition, and an SMB denial-of-service vulnerability.
 
-*To be completed.*
+Additional service-specific enumeration identified significant security weaknesses, including successful authentication using default FTP credentials, anonymous SMB enumeration, weak SMB password policies, exposed web applications, and support for deprecated SSH cryptographic algorithms.
+
+The findings demonstrate the importance of systematic reconnaissance, service enumeration, vulnerability identification, secure configuration, patch management, and access control. The assessment provides a structured basis for prioritizing remediation and conducting further controlled validation within an authorized penetration testing environment.
+
+---
+
+The engagement was conducted as an authorized network security assessment within an isolated virtual laboratory environment. The assessment targeted a Metasploitable3 virtual machine configured to simulate a deliberately vulnerable Linux-based system.
+
+The primary objective was to perform systematic network reconnaissance and enumeration to identify the target's exposed attack surface, including active services, open TCP and UDP ports, software versions, operating system characteristics, service configurations, web resources, and potential security weaknesses.
+
+The assessment was performed from a Kali Linux virtual machine using Nmap and its Nmap Scripting Engine (NSE), supported by additional enumeration tools including WhatWeb, Nikto, Gobuster, Enum4linux, and standard network utilities. Testing progressed from basic host discovery through service-specific enumeration and vulnerability assessment.
+
+### Scope
+
+| Item | Details |
+| --- | --- |
+| Assessment Type | Network Scanning and Enumeration |
+| Target | Metasploitable3 |
+| Target IP | `192.168.56.101` |
+| Attacker Platform | Kali Linux |
+| Network | Isolated Host-Only Virtual Network |
+| Primary Tool | Nmap 7.98 |
+| Supporting Tools | Nmap NSE, WhatWeb, Nikto, Gobuster, Enum4linux, Netcat, FTP client |
+| Authorization | Controlled laboratory environment |
+| Assessment Focus | Network services, service configuration, web resources, SMB, FTP, SSH, and potential vulnerabilities |
+
+### Assessment Boundaries
+
+The assessment was limited to the authorized Metasploitable3 laboratory system. No external production systems, third-party infrastructure, or unauthorized hosts were targeted.
+
+The assessment focused primarily on reconnaissance, enumeration, vulnerability identification, and security analysis. Automated vulnerability findings were treated as potential indicators and were not considered confirmed exploitable vulnerabilities without additional manual validation.
+
+The information collected during the engagement was used to document the target's security posture and develop appropriate defensive recommendations.
 
 # Assessment Methodology
 

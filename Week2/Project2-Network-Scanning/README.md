@@ -1,4 +1,5 @@
-# Week 2 – Network Scanning & Enumeration
+
+h# Week 2 – Network Scanning & Enumeration
 
 ## Professional Network Assessment Report
 
@@ -38,7 +39,37 @@ This assessment was conducted against a Metasploitable3 virtual machine within a
 ## Table of Contents
 
 - [Executive Summary](#executive-summary)
+
 - [Engagement Overview](#engagement-overview)
+The engagement involved a structured network reconnaissance and enumeration assessment of an intentionally vulnerable Metasploitable3 virtual machine. Testing was conducted from Kali Linux within an isolated VirtualBox Host-Only network.
+
+The target system was `192.168.56.101`. The assessment focused on identifying exposed network services, enumerating service versions and configurations, identifying the underlying operating system, and detecting potential security weaknesses.
+
+All testing was performed in an authorized laboratory environment for educational and cybersecurity training purposes. No unauthorized external or production systems were assessed.
+
+### Scope
+
+- Host discovery
+- TCP and UDP port scanning
+- Service and version detection
+- Operating system detection
+- Nmap NSE enumeration
+- Web enumeration
+- SMB enumeration
+- FTP enumeration
+- SSH enumeration
+- Vulnerability assessment
+
+### Target Information
+
+| Item | Details |
+|---|---|
+| Target | Metasploitable3 |
+| IP Address | `192.168.56.101` |
+| Attacker Platform | Kali Linux |
+| Network | VirtualBox Host-Only |
+| Primary Tool | Nmap 7.98 |
+| Assessment Type | Authorized Laboratory Assessment |
 - [Assessment Methodology](#assessment-methodology)
 - [Lab Environment](#lab-environment)
 - [Reconnaissance and Host Discovery](#reconnaissance-and-host-discovery)
@@ -62,25 +93,42 @@ This assessment was conducted against a Metasploitable3 virtual machine within a
 
 # Executive Summary
 
-*To be completed as the assessment progresses.*
+This assessment was conducted against a Metasploitable3 virtual machine within an isolated and authorized laboratory environment to evaluate the system's network exposure and identify potential security weaknesses.
+
+The assessment followed a structured network reconnaissance methodology using Nmap. Host discovery confirmed that the target was active, followed by TCP and UDP port scanning, service version detection, service enumeration, operating system detection, web and protocol-specific enumeration, and Nmap NSE vulnerability assessment.
+
+The assessment identified multiple exposed services, including FTP, SSH, HTTP, SMB, CUPS, MySQL, and Jetty. Service enumeration revealed additional security concerns, including exposed web directories, SMB configuration weaknesses, legacy software versions, and potentially unnecessary or publicly accessible resources.
+
+The NSE vulnerability assessment identified potential issues affecting HTTP and SMB services, including possible cross-site request forgery (CSRF), SQL injection conditions, Slowloris-related denial-of-service exposure, and an SMB denial-of-service condition. These findings require appropriate manual validation before final risk ratings or exploitability conclusions are assigned.
+
+Overall, the assessment demonstrated that the target has a broad attack surface containing legacy services, exposed resources, and potential application- and service-level vulnerabilities. The findings provide a clear basis for remediation, security hardening, controlled validation, and subsequent retesting.
 
 ---
 
 # Engagement Overview
 
-*To be completed.*
+This assessment was conducted as part of a controlled cybersecurity training exercise to demonstrate network reconnaissance, scanning, enumeration, and vulnerability identification techniques.
+
+The assessment targeted a Metasploitable3 virtual machine configured within an isolated laboratory network. The target system was assigned the IP address 192.168.56.101 and was assessed from a Kali Linux penetration testing workstation.
+
+The engagement focused on identifying exposed network services, determining service versions, fingerprinting the operating system, performing service enumeration, and identifying potential security weaknesses using Nmap and its Network Scanning Engine (NSE).
+
+All testing was performed within an authorized and controlled laboratory environment. No production systems or third-party infrastructure were targeted.
 
 ---
 
 # Assessment Methodology
+The assessment followed a structured network reconnaissance methodology using Nmap to identify active hosts, discover open ports, identify running services, perform operating system detection, and enumerate available network services.
 
-The assessment followed a structured reconnaissance methodology using Nmap to identify active hosts, discover open ports, identify running services, perform operating system detection, and enumerate available network services.
+The methodology was designed to progress from broad network discovery to detailed service enumeration and vulnerability assessment.
 
 ---
+
 
 # Reconnaissance and Host Discovery
 
 The first phase of the assessment was to determine whether the target host was online and reachable. Nmap host discovery confirmed that the Metasploitable3 virtual machine was active on the network.
+
 
 ## Host Discovery Overview
 
@@ -1348,27 +1396,119 @@ Overall, the assessment provided a clear picture of the target's security weakne
 
 # Findings Summary
 
-*To be completed.*
+The network scanning and enumeration assessment identified multiple exposed services and security weaknesses on the Metasploitable target at `192.168.56.101`. The assessment progressed from host discovery and port scanning through service identification, enumeration, operating system detection, and vulnerability assessment.
+
+The primary findings are summarized below:
+
+| Area              | Key Finding                                                                | Security Significance                                                                   |
+| ----------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Host Discovery    | Target host was confirmed reachable                                        | Established the target as active and available for further assessment                   |
+| TCP Port Scanning | Ports 21, 22, 80, 445, and 631 were identified as open                     | Multiple network services increase the attack surface                                   |
+| FTP               | ProFTPD 1.3.5 identified                                                   | Legacy service version requires security review and hardening                           |
+| SSH               | OpenSSH 6.6.1p1 identified with legacy cryptographic options               | Deprecated algorithms and password authentication increase security risk                |
+| HTTP              | Apache 2.4.7 identified with multiple accessible resources                 | Web service presents several potential attack vectors                                   |
+| Web Enumeration   | Directory listing, `/test.php`, `/phpmyadmin/`, and `/uploads/` identified | Information exposure and unnecessary resources increase attack surface                  |
+| CSRF              | Potential CSRF conditions identified in several web forms                  | May allow unauthorized actions if requests are not properly protected                   |
+| SQL Injection     | Possible SQL injection conditions identified                               | Requires manual validation due to potential impact on application and database security |
+| Slowloris         | HTTP service reported as likely vulnerable to CVE-2007-6750                | Potential denial-of-service risk                                                        |
+| SMB               | `smb-vuln-regsvc-dos` reported as vulnerable                               | Potential service availability impact                                                   |
+| OS Detection      | Linux operating system fingerprint identified                              | Provides additional information for attack planning                                     |
+
+Overall, the assessment demonstrated that the target has a broad attack surface consisting of legacy services, exposed web resources, weak security configurations, and potential application-layer vulnerabilities. The findings provide a basis for prioritizing remediation and further controlled validation.
+
 
 ---
 
 # Recommendations
 
-*To be completed.*
+Based on the results of the network scanning, service enumeration, and vulnerability assessment, the following recommendations are proposed to reduce the target's attack surface and improve its overall security posture.
+
+## Service Hardening
+
+* Remove or disable unnecessary network services and exposed ports.
+* Upgrade legacy services such as ProFTPD and OpenSSH to supported and security-maintained versions.
+* Review service configurations and disable unnecessary features and protocols.
+* Restrict administrative and management services to trusted hosts or dedicated management networks.
+
+## SSH Security
+
+* Disable deprecated cryptographic algorithms and legacy key-exchange methods.
+* Remove weak or obsolete authentication mechanisms where practical.
+* Prefer strong modern cryptographic algorithms and key-based authentication.
+* Enforce strong password policies where password authentication remains enabled.
+* Restrict SSH access using firewall rules and network-level access controls.
+
+## Web Server Security
+
+* Upgrade the Apache HTTP server and associated web applications to supported versions.
+* Disable directory listing where it is not required.
+* Remove unnecessary test files such as `/test.php`.
+* Restrict access to administrative interfaces such as phpMyAdmin.
+* Secure the `/uploads/` directory and prevent unauthorized execution of uploaded files.
+* Implement appropriate HTTP security headers and secure application configuration.
+
+## Web Application Security
+
+* Implement anti-CSRF tokens on state-changing forms.
+* Use parameterized queries and prepared statements to prevent SQL injection.
+* Validate and sanitize user-controlled input on both the client and server sides.
+* Review authentication and session-management mechanisms.
+* Conduct manual validation of automated vulnerability findings before remediation decisions are finalized.
+
+## SMB and Network Security
+
+* Disable SMB services that are not required.
+* Apply security updates to vulnerable SMB components.
+* Restrict SMB access using host-based and network firewalls.
+* Segment sensitive services from untrusted network areas.
+* Monitor exposed services for unauthorized connection attempts and suspicious activity.
+
+## Patch and Vulnerability Management
+
+* Maintain a regular patch-management process for the operating system, applications, and network services.
+* Prioritize remediation of vulnerabilities that affect availability, authentication, or potential unauthorized access.
+* Perform periodic vulnerability scans after remediation to confirm that identified weaknesses have been addressed.
+* Maintain an inventory of installed software and exposed services to identify unsupported or outdated components.
+
+## Security Monitoring
+
+* Enable appropriate system and application logging.
+* Monitor authentication attempts and network connections to exposed services.
+* Establish alerting for unusual activity involving SSH, SMB, FTP, and HTTP services.
+* Regularly review security logs to identify potential indicators of compromise.
+
+## Validation and Retesting
+
+Automated vulnerability scanning should be followed by controlled manual validation. Findings should be confirmed before assigning final severity, and remediation should be followed by retesting to verify that vulnerabilities have been effectively addressed.
+
+These recommendations provide a prioritized foundation for reducing the attack surface and improving the security posture of the assessed environment.
+
 
 ---
 
 # Conclusion
 
-*To be completed.*
+The Week 2 Network Scanning and Enumeration assessment provided a structured examination of the Metasploitable target from an external reconnaissance and service identification perspective. The assessment progressed through host discovery, TCP and UDP port scanning, service version detection, service enumeration, operating system detection, NSE script scanning, web enumeration, SMB enumeration, FTP enumeration, SSH enumeration, and vulnerability assessment.
+
+The assessment identified multiple exposed services, including FTP, SSH, HTTP, SMB, and IPP. Several security weaknesses were also identified, including legacy software and cryptographic configurations, exposed web resources, potential CSRF and SQL injection conditions, a likely Slowloris denial-of-service condition, and an SMB denial-of-service vulnerability.
+
+The findings demonstrate how network scanning and enumeration can provide valuable information about a target's attack surface and help identify areas requiring further security investigation. Automated tools such as Nmap are effective for identifying exposed services and potential vulnerabilities, but their results should be manually validated before vulnerabilities are considered confirmed.
+
+Overall, the assessment highlighted the importance of reducing unnecessary service exposure, maintaining supported software versions, applying security patches, enforcing strong authentication and cryptographic controls, securing web applications, and implementing appropriate network access restrictions.
+
+The assessment was conducted within an authorized laboratory environment using Metasploitable as the target. No unauthorized external systems were tested.
+
 
 ---
 
 # References
 
-- Nmap Official Documentation
-- Kali Linux Documentation
-- Metasploitable3 Documentation
+* Nmap Documentation — Official documentation for Nmap scanning, service detection, NSE scripts, and vulnerability assessment.
+* Kali Linux Documentation — Official documentation for the Kali Linux penetration testing environment and security tools.
+* Metasploitable3 Documentation — Documentation for the intentionally vulnerable Metasploitable3 laboratory environment.
+* MITRE CVE — Reference information for publicly disclosed vulnerabilities, including CVE-2007-6750 (Slowloris).
+* Nmap NSE Documentation — Reference for Nmap Scripting Engine scripts used during service enumeration and vulnerability assessment.
+
 
 ---
 
