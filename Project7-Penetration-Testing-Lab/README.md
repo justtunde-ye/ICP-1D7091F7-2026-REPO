@@ -1,6 +1,4 @@
-
-h# Week 2 – Network Scanning & Enumeration
-
+# Network Scanning & Enumeration
 ## Professional Network Assessment Report
 
 ## Project Overview
@@ -1488,7 +1486,7 @@ These recommendations provide a prioritized foundation for reducing the attack s
 
 # Conclusion
 
-The Week 2 Network Scanning and Enumeration assessment provided a structured examination of the Metasploitable target from an external reconnaissance and service identification perspective. The assessment progressed through host discovery, TCP and UDP port scanning, service version detection, service enumeration, operating system detection, NSE script scanning, web enumeration, SMB enumeration, FTP enumeration, SSH enumeration, and vulnerability assessment.
+The Network Scanning and Enumeration assessment provided a structured examination of the Metasploitable target from an external reconnaissance and service identification perspective. The assessment progressed through host discovery, TCP and UDP port scanning, service version detection, service enumeration, operating system detection, NSE script scanning, web enumeration, SMB enumeration, FTP enumeration, SSH enumeration, and vulnerability assessment.
 
 The assessment identified multiple exposed services, including FTP, SSH, HTTP, SMB, and IPP. Several security weaknesses were also identified, including legacy software and cryptographic configurations, exposed web resources, potential CSRF and SQL injection conditions, a likely Slowloris denial-of-service condition, and an SMB denial-of-service vulnerability.
 
