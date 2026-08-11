@@ -1499,6 +1499,43 @@ The assessment was conducted within an authorized laboratory environment using M
 
 ---
 
+
+# Privilege Escalation
+
+## Overview
+
+Following the network reconnaissance, service enumeration, and vulnerability assessment phases, a local privilege-escalation assessment was performed against the Metasploitable3 Ubuntu 14.04 target.
+
+The assessment verified the privileges available to the authenticated `vagrant` account and determined whether those privileges could be used to obtain root-level execution.
+
+## Target Verification
+
+The authenticated session was verified on the intended target system.
+
+| Item | Result |
+| --- | --- |
+| Target | `metasploitable3-ub1404` |
+| Target IP | `192.168.56.101` |
+| Initial User | `vagrant` |
+| User ID | `uid=900(vagrant)` |
+| Group Membership | `sudo` |
+
+The `vagrant` account was confirmed to be a member of the `sudo` group.
+
+**Evidence:** `screenshots/privilege-escalation-target-verification.png`
+
+## Sudo Privilege Enumeration
+
+The `sudo -l` command was used to determine the commands available to the authenticated account through `sudo`.
+
+The assessment identified the following permission:
+
+```text
+(ALL : ALL) NOPASSWD: ALL
+```
+---
+
+
 # References
 
 * Nmap Documentation — Official documentation for Nmap scanning, service detection, NSE scripts, and vulnerability assessment.
