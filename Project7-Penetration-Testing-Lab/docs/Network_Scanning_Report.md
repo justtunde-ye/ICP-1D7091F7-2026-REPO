@@ -643,3 +643,461 @@ Several important observations can be made from this simple scan:
 Although host discovery does not reveal vulnerabilities, it establishes the foundation upon which every later stage of a penetration test depends.
 
 ---
+# 8. TCP SYN Scan
+
+## Chapter Overview
+
+The TCP SYN scan was performed after host discovery to identify open TCP ports on the confirmed live Metasploitable target. This phase established which TCP services were reachable and provided the foundation for subsequent service and version enumeration.
+
+---
+
+## 8.1 Introduction
+
+TCP SYN scanning is a fundamental network reconnaissance technique used to identify open TCP ports without completing a full TCP connection.
+
+In this assessment, the TCP SYN scan was performed against the confirmed target `192.168.56.101`. The results identified several accessible TCP services, including FTP, SSH, HTTP, SMB, and IPP.
+
+---
+
+## 8.2 Purpose of the TCP SYN Scan
+
+The primary objectives of the scan were to:
+
+* Identify open TCP ports on the target.
+* Determine which network services were externally reachable.
+* Identify filtered ports that did not respond to the scan.
+* Establish the target's exposed TCP attack surface.
+* Provide information for subsequent service and version enumeration.
+
+---
+
+## 8.3 TCP SYN Scan Command
+
+### Command Used
+
+
+```bash
+nmap -sS 192.168.56.101
+```
+The -sS option performs a TCP SYN scan. It sends SYN packets to the target ports and analyzes the responses to determine whether ports are open, closed, or filtered.
+
+The target IP address 192.168.56.101 is the Metasploitable virtual machine identified during the host discovery phase.
+
+### What It Does
+
+The `nmap` command launches the Nmap network scanning utility.
+
+The `-sS` option performs a TCP SYN scan. Nmap sends TCP SYN packets to the target ports and analyzes the responses to determine whether ports are open, closed, or filtered.
+
+The target address `192.168.56.101` specifies the Metasploitable virtual machine that was previously confirmed to be online during host discovery.
+
+---
+
+## 8.4 Why We're Running It
+
+The host discovery phase confirmed that `192.168.56.101` was active and reachable.
+
+The next logical step was to determine which TCP ports were exposed on that host. Identifying open ports provides visibility into the services available for further enumeration.
+
+This information was subsequently used to guide service-specific enumeration of protocols such as FTP, SSH, HTTP, SMB, and IPP.
+
+---
+
+## 8.5 Scan Results
+
+The TCP SYN scan confirmed that the target was online and identified five open TCP ports:
+
+| Port    | State | Service          |
+| ------- | ----- | ---------------- |
+| 21/tcp  | open  | FTP              |
+| 22/tcp  | open  | SSH              |
+| 80/tcp  | open  | HTTP             |
+| 445/tcp | open  | Microsoft-DS/SMB |
+| 631/tcp | open  | IPP              |
+
+The scan also reported **995 filtered TCP ports**, indicating that those ports did not return a response to the scan.
+
+The target's MAC address was identified as:
+
+`08:00:27:D8:45:3A`
+
+The network interface vendor was identified as **Oracle VirtualBox**, consistent with the controlled virtual laboratory environment.
+
+---
+
+## 8.6 Analysis of Results
+
+The results demonstrate that the Metasploitable target exposed multiple TCP services to the Kali assessment machine.
+
+The open FTP port on TCP/21 provided the basis for subsequent FTP enumeration. TCP/22 indicated an accessible SSH service, while TCP/80 identified an HTTP service requiring further web enumeration.
+
+TCP/445 indicated an SMB-related service, which was subsequently investigated through SMB enumeration. TCP/631 exposed the Internet Printing Protocol (IPP), providing another service for further assessment.
+
+The presence of multiple exposed services increased the target's attack surface and justified continued service-specific enumeration.
+
+---
+
+## 8.7 Security Significance
+
+Open network services increase the number of potential entry points that must be evaluated during a penetration test.
+
+However, an open port alone does not demonstrate that a vulnerability exists. Each identified service must be examined further to determine its software version, configuration, authentication mechanisms, and potential security weaknesses.
+
+The TCP SYN scan therefore served as a transition between basic host discovery and detailed service enumeration.
+
+---
+
+## 8.8 Evidence
+
+The TCP SYN scan was recorded in the following evidence files:
+
+* `scans/tcp_syn_scan.txt`
+* `screenshots/tcp-syn-scan.png`
+
+---
+
+## 8.9 Key Takeaways
+
+The TCP SYN scan successfully:
+
+1. Confirmed that the target remained reachable.
+2. Identified five open TCP ports.
+3. Identified FTP, SSH, HTTP, SMB-related, and IPP services.
+4. Identified 995 filtered TCP ports.
+5. Provided the service information required for subsequent enumeration.
+6. Established the exposed TCP attack surface of the Metasploitable laboratory target.
+
+---
+# 8. TCP SYN Scan
+
+## Chapter Overview
+
+The TCP SYN scan was performed after host discovery to identify open TCP ports on the confirmed live Metasploitable target. This phase established which TCP services were reachable and provided the foundation for subsequent service and version enumeration.
+
+---
+
+## 8.1 Introduction
+
+TCP SYN scanning is a fundamental network reconnaissance technique used to identify open TCP ports without completing a full TCP connection.
+
+In this assessment, the TCP SYN scan was performed against the confirmed target `192.168.56.101`. The results identified several accessible TCP services, including FTP, SSH, HTTP, SMB, and IPP.
+
+---
+
+## 8.2 Purpose of the TCP SYN Scan
+
+The primary objectives of the scan were to:
+
+* Identify open TCP ports on the target.
+* Determine which network services were externally reachable.
+* Identify filtered ports that did not respond to the scan.
+* Establish the target's exposed TCP attack surface.
+* Provide information for subsequent service and version enumeration.
+
+---
+
+## 8.3 TCP SYN Scan Command
+
+### Command Used
+
+```bash
+nmap -sS 192.168.56.101
+```
+
+### What It Does
+
+The `nmap` command launches the Nmap network scanning utility.
+
+The `-sS` option performs a TCP SYN scan. Nmap sends TCP SYN packets to the target ports and analyzes the responses to determine whether ports are open, closed, or filtered.
+
+The target address `192.168.56.101` specifies the Metasploitable virtual machine that was previously confirmed to be online during host discovery.
+
+---
+
+## 8.4 Why We're Running It
+
+The host discovery phase confirmed that `192.168.56.101` was active and reachable.
+
+The next logical step was to determine which TCP ports were exposed on that host. Identifying open ports provides visibility into the services available for further enumeration.
+
+This information was subsequently used to guide service-specific enumeration of protocols such as FTP, SSH, HTTP, SMB, and IPP.
+
+---
+
+## 8.5 Scan Results
+
+The TCP SYN scan confirmed that the target was online and identified five open TCP ports:
+
+| Port    | State | Service          |
+| ------- | ----- | ---------------- |
+| 21/tcp  | open  | FTP              |
+| 22/tcp  | open  | SSH              |
+| 80/tcp  | open  | HTTP             |
+| 445/tcp | open  | Microsoft-DS/SMB |
+| 631/tcp | open  | IPP              |
+
+The scan also reported **995 filtered TCP ports**, indicating that those ports did not return a response to the scan.
+
+The target's MAC address was identified as:
+
+`08:00:27:D8:45:3A`
+
+The network interface vendor was identified as **Oracle VirtualBox**, consistent with the controlled virtual laboratory environment.
+
+---
+
+## 8.6 Analysis of Results
+
+The results demonstrate that the Metasploitable target exposed multiple TCP services to the Kali assessment machine.
+
+The open FTP port on TCP/21 provided the basis for subsequent FTP enumeration. TCP/22 indicated an accessible SSH service, while TCP/80 identified an HTTP service requiring further web enumeration.
+
+TCP/445 indicated an SMB-related service, which was subsequently investigated through SMB enumeration. TCP/631 exposed the Internet Printing Protocol (IPP), providing another service for further assessment.
+
+The presence of multiple exposed services increased the target's attack surface and justified continued service-specific enumeration.
+
+---
+
+## 8.7 Security Significance
+
+Open network services increase the number of potential entry points that must be evaluated during a penetration test.
+
+However, an open port alone does not demonstrate that a vulnerability exists. Each identified service must be examined further to determine its software version, configuration, authentication mechanisms, and potential security weaknesses.
+
+The TCP SYN scan therefore served as a transition between basic host discovery and detailed service enumeration.
+
+---
+
+## 8.8 Evidence
+
+The TCP SYN scan was recorded in the following evidence files:
+
+* `scans/tcp_syn_scan.txt`
+* `screenshots/tcp-syn-scan.png`
+
+---
+
+## 8.9 Key Takeaways
+
+The TCP SYN scan successfully:
+
+1. Confirmed that the target remained reachable.
+2. Identified five open TCP ports.
+3. Identified FTP, SSH, HTTP, SMB-related, and IPP services.
+4. Identified 995 filtered TCP ports.
+5. Provided the service information required for subsequent enumeration.
+6. Established the exposed TCP attack surface of the Metasploitable laboratory target.
+
+---
+# 8. TCP SYN Scan
+
+## Chapter Overview
+
+The TCP SYN scan was performed after host discovery to identify open TCP ports on the confirmed live Metasploitable target. This phase established which TCP services were reachable and provided the foundation for subsequent service and version enumeration.
+
+---
+
+## 8.1 Introduction
+
+TCP SYN scanning is a fundamental network reconnaissance technique used to identify open TCP ports without completing a full TCP connection.
+
+In this assessment, the TCP SYN scan was performed against the confirmed target `192.168.56.101`. The results identified several accessible TCP services, including FTP, SSH, HTTP, SMB, and IPP.
+
+---
+
+## 8.2 Purpose of the TCP SYN Scan
+
+The primary objectives of the scan were to:
+
+* Identify open TCP ports on the target.
+* Determine which network services were externally reachable.
+* Identify filtered ports that did not respond to the scan.
+* Establish the target's exposed TCP attack surface.
+* Provide information for subsequent service and version enumeration.
+
+---
+
+## 8.3 TCP SYN Scan Command
+
+### Command Used
+
+```bash
+nmap -sS 192.168.56.101
+```
+
+### What It Does
+
+The `nmap` command launches the Nmap network scanning utility.
+
+The `-sS` option performs a TCP SYN scan. Nmap sends TCP SYN packets to the target ports and analyzes the responses to determine whether ports are open, closed, or filtered.
+
+The target address `192.168.56.101` specifies the Metasploitable virtual machine that was previously confirmed to be online during host discovery.
+
+---
+
+## 8.4 Why We're Running It
+
+The host discovery phase confirmed that `192.168.56.101` was active and reachable.
+
+The next logical step was to determine which TCP ports were exposed on that host. Identifying open ports provides visibility into the services available for further enumeration.
+
+This information was subsequently used to guide service-specific enumeration of protocols such as FTP, SSH, HTTP, SMB, and IPP.
+
+---
+
+## 8.5 Scan Results
+
+The TCP SYN scan confirmed that the target was online and identified five open TCP ports:
+
+| Port    | State | Service          |
+| ------- | ----- | ---------------- |
+| 21/tcp  | open  | FTP              |
+| 22/tcp  | open  | SSH              |
+| 80/tcp  | open  | HTTP             |
+| 445/tcp | open  | Microsoft-DS/SMB |
+| 631/tcp | open  | IPP              |
+
+The scan also reported **995 filtered TCP ports**, indicating that those ports did not return a response to the scan.
+
+The target's MAC address was identified as:
+
+`08:00:27:D8:45:3A`
+
+The network interface vendor was identified as **Oracle VirtualBox**, consistent with the controlled virtual laboratory environment.
+
+---
+
+## 8.6 Analysis of Results
+
+The results demonstrate that the Metasploitable target exposed multiple TCP services to the Kali assessment machine.
+
+The open FTP port on TCP/21 provided the basis for subsequent FTP enumeration. TCP/22 indicated an accessible SSH service, while TCP/80 identified an HTTP service requiring further web enumeration.
+
+TCP/445 indicated an SMB-related service, which was subsequently investigated through SMB enumeration. TCP/631 exposed the Internet Printing Protocol (IPP), providing another service for further assessment.
+
+The presence of multiple exposed services increased the target's attack surface and justified continued service-specific enumeration.
+
+---
+
+## 8.7 Security Significance
+
+Open network services increase the number of potential entry points that must be evaluated during a penetration test.
+
+However, an open port alone does not demonstrate that a vulnerability exists. Each identified service must be examined further to determine its software version, configuration, authentication mechanisms, and potential security weaknesses.
+
+The TCP SYN scan therefore served as a transition between basic host discovery and detailed service enumeration.
+
+---
+
+## 8.8 Evidence
+
+The TCP SYN scan was recorded in the following evidence files:
+
+* `scans/tcp_syn_scan.txt`
+* `screenshots/tcp-syn-scan.png`
+
+---
+
+## 8.9 Key Takeaways
+
+The TCP SYN scan successfully:
+
+1. Confirmed that the target remained reachable.
+2. Identified five open TCP ports.
+3. Identified FTP, SSH, HTTP, SMB-related, and IPP services.
+4. Identified 995 filtered TCP ports.
+5. Provided the service information required for subsequent enumeration.
+6. Established the exposed TCP attack surface of the Metasploitable laboratory target.
+
+---
+8. TCP SYN Scan
+Chapter Overview
+
+The TCP SYN scan was performed after host discovery to identify open TCP ports on the confirmed live Metasploitable target. This phase established which TCP services were reachable and provided the foundation for subsequent service and version enumeration.
+
+8.1 Introduction
+
+TCP SYN scanning is a fundamental network reconnaissance technique used to identify open TCP ports without completing a full TCP connection.
+
+In this assessment, the TCP SYN scan was performed against the confirmed target 192.168.56.101. The results identified several accessible TCP services, including FTP, SSH, HTTP, SMB, and IPP.
+
+8.2 Purpose of the TCP SYN Scan
+
+The primary objectives of the scan were to:
+
+Identify open TCP ports on the target.
+Determine which network services were externally reachable.
+Identify filtered ports that did not respond to the scan.
+Establish the target's exposed TCP attack surface.
+Provide information for subsequent service and version enumeration.
+8.3 TCP SYN Scan Command
+Command Used
+nmap -sS 192.168.56.101
+What It Does
+
+The nmap command launches the Nmap network scanning utility.
+
+The -sS option performs a TCP SYN scan. Nmap sends TCP SYN packets to the target ports and analyzes the responses to determine whether ports are open, closed, or filtered.
+
+The target address 192.168.56.101 specifies the Metasploitable virtual machine that was previously confirmed to be online during host discovery.
+8.4 Why We're Running It
+
+The host discovery phase confirmed that 192.168.56.101 was active and reachable.
+
+The next logical step was to determine which TCP ports were exposed on that host. Identifying open ports provides visibility into the services available for further enumeration.
+
+This information was subsequently used to guide service-specific enumeration of protocols such as FTP, SSH, HTTP, SMB, and IPP.
+
+8.5 Scan Results
+
+The TCP SYN scan confirmed that the target was online and identified five open TCP ports:
+
+Port	State	Service
+21/tcp	open	FTP
+22/tcp	open	SSH
+80/tcp	open	HTTP
+445/tcp	open	Microsoft-DS/SMB
+631/tcp	open	IPP
+
+The scan also reported 995 filtered TCP ports, indicating that those ports did not return a response to the scan.
+
+The target's MAC address was identified as:
+
+08:00:27:D8:45:3A
+
+The network interface vendor was identified as Oracle VirtualBox, consistent with the controlled virtual laboratory environment.
+
+8.6 Analysis of Results
+
+The results demonstrate that the Metasploitable target exposed multiple TCP services to the Kali assessment machine.
+
+The open FTP port on TCP/21 provided the basis for subsequent FTP enumeration. TCP/22 indicated an accessible SSH service, while TCP/80 identified an HTTP service requiring further web enumeration.
+
+TCP/445 indicated an SMB-related service, which was subsequently investigated through SMB enumeration. TCP/631 exposed the Internet Printing Protocol (IPP), providing another service for further assessment.
+
+The presence of multiple exposed services increased the target's attack surface and justified continued service-specific enumeration.
+
+8.7 Security Significance
+
+Open network services increase the number of potential entry points that must be evaluated during a penetration test.
+
+However, an open port alone does not demonstrate that a vulnerability exists. Each identified service must be examined further to determine its software version, configuration, authentication mechanisms, and potential security weaknesses.
+
+The TCP SYN scan therefore served as a transition between basic host discovery and detailed service enumeration.
+
+8.8 Evidence
+
+The TCP SYN scan was recorded in the following evidence files:
+
+scans/tcp_syn_scan.txt
+screenshots/tcp-syn-scan.png
+8.9 Key Takeaways
+
+The TCP SYN scan successfully:
+
+Confirmed that the target remained reachable.
+Identified five open TCP ports.
+Identified FTP, SSH, HTTP, SMB-related, and IPP services.
+Identified 995 filtered TCP ports.
+Provided the service information required for subsequent enumeration.
+Established the exposed TCP attack surface of the Metasploitable laboratory target.
