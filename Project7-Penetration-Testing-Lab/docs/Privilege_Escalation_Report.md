@@ -180,10 +180,12 @@ The Metasploit-based assessment was performed after the direct SSH privilege-esc
 
 The Metasploit database connection was verified using the `db_status` command.
 
-#### Command Used
+### Command Used
 
 ```text
 db_status
+```
+
 #### What It Does
 
 The `db_status` command reports the current connection status of the Metasploit Framework database. In this assessment, the database connection was confirmed as active and using PostgreSQL.
@@ -208,15 +210,16 @@ The authorized Metasploitable3 target was added to the Metasploit database using
 
 ```text
 hosts -a 192.168.56.101
-What It Does
+```
+### What It Does
 
 The hosts -a command adds a host to the Metasploit database so that the target can be tracked as an assessment asset.
 
-Assessment Significance
+### Assessment Significance
 
 Registering the target establishes the IP address within Metasploit and allows subsequent service and vulnerability information to be associated with the correct laboratory system.
 
-Evidence
+### Evidence
 
 screenshots/metasploit-host-registration.png
 
@@ -228,7 +231,8 @@ The `hosts` command was used to verify that the authorized Metasploitable3 targe
 
 ```text
 hosts
-What It Does
+```
+### What It Does
 
 The hosts command displays hosts currently stored in the Metasploit database, allowing the assessor to verify that the intended target has been registered.
 
@@ -240,7 +244,7 @@ Assessment Significance
 
 This confirms that the intended Metasploitable3 laboratory system is registered in Metasploit and can be associated with subsequent service and vulnerability information.
 
-Evidence
+### Evidence
 
 screenshots/metasploit-hosts-list.png
 
@@ -252,17 +256,18 @@ The `services` command was used to query the Metasploit database for network ser
 
 ```text
 services
-What It Does
+```
+### What It Does
 
 The services command displays service information stored in the Metasploit database. The results can include the target host, port number, protocol, service name, state, and additional service information.
 
-Why We're Running It
+### Why We're Running It
 
 After confirming that the target was registered in the Metasploit database, the next step was to determine which network services had been recorded for that host.
 
 This provides a structured service inventory that can be used to support further assessment and module research.
 
-Finding
+### Finding
 
 The Metasploit database displayed the services associated with the registered target.
 
@@ -272,7 +277,7 @@ Assessment Significance
 
 The service inventory provides a framework-based view of the target's exposed attack surface. It also demonstrates that information collected through Metasploit can be queried after being stored in the database.
 
-Evidence
+### Evidence
 
 screenshots/metasploit-services-initial.png
 
@@ -284,19 +289,20 @@ The `db_nmap` command was used to perform Nmap service and version detection thr
 
 ```text
 db_nmap -sV 192.168.56.101
-What It Does
+```
+### What It Does
 
 db_nmap allows Nmap to be executed from within Metasploit while automatically importing the scan results into the Metasploit database.
 
 The -sV option enables service and version detection. Rather than identifying only whether a port is open, this scan attempts to determine the service running on each discovered port and, where possible, its software version.
 
-Why We're Running It
+### Why We're Running It
 
 The earlier assessment established the target's exposed services using Nmap. Running the service/version scan through Metasploit provides an additional verification and imports the results directly into the Metasploit database.
 
 This is useful because the discovered services can subsequently be queried within Metasploit and used to guide module research.
 
-Findings
+### Findings
 
 The scan identified the following services on the authorized Metasploitable3 target:
 
@@ -337,18 +343,18 @@ The Metasploit vulnerability database was queried using the `vulns` command to d
 
 ```text
 vulns
-
-What It Does
+```
+### What It Does
 
 The vulns command displays vulnerability information currently stored in the Metasploit database. When vulnerability records are available, the output can include the affected host, service, vulnerability name, timestamp, resource, and associated references.
 
-Why We're Running It
+### Why We're Running It
 
 The purpose of this check was to determine whether the information already collected through Metasploit had resulted in vulnerability records being associated with the target.
 
 This provides a useful distinction between vulnerabilities identified during scanning and vulnerabilities that have actually been imported or recorded in the Metasploit database.
 
-Output
+### Output
 
 The command returned an empty vulnerability table:
 
@@ -358,7 +364,7 @@ Timestamp  Host  Service  Resource  Name  References
 
 No vulnerability records were displayed.
 
-Finding
+### Finding
 
 The empty result indicates that no vulnerability records were currently associated with 192.168.56.101 in the Metasploit vulnerability database at the time of the assessment.
 
@@ -366,13 +372,13 @@ This does not mean that the Metasploitable3 system has no vulnerabilities. The t
 
 Instead, the result indicates that those findings were not currently represented as vulnerability records in the Metasploit database.
 
-Assessment Significance
+### Assessment Significance
 
 This demonstrates an important distinction between vulnerability discovery and vulnerability database registration. A scanner may identify potential vulnerabilities without those findings automatically appearing in Metasploit's vulns database.
 
 Therefore, the empty vulns result was treated as a database-state observation rather than evidence that the target was secure.
 
-Evidence
+### Evidence
 
 screenshots/metasploit-vulns-empty.png
 
@@ -383,21 +389,21 @@ After the direct SSH assessment confirmed that the `vagrant` account possessed u
 #### Command Used
 
 ```text
-search sudo
-
-What It Does
+search
+```
+### What It Does
 
 The search sudo command searches the Metasploit module database for modules whose names or descriptions contain the term sudo.
 
 The results can include exploit modules, post-exploitation modules, payloads, and other supporting modules related to sudo or privilege escalation.
 
-Why We're Running It
+### Why We're Running It
 
 The purpose of this search was to determine whether Metasploit contains modules relevant to sudo-based privilege escalation.
 
 This provides supporting evidence that the Framework can be used to research potential privilege-escalation techniques after an elevated-privilege condition has been identified during manual enumeration.
 
-Findings
+### Findings
 
 The search returned multiple sudo-related modules. One relevant result was:
 
@@ -424,7 +430,7 @@ sudo id
 
 Therefore, the Metasploit module search is supporting evidence demonstrating module discovery and research capability, while the direct SSH commands provide the actual proof of successful privilege escalation.
 
-Assessment Significance
+### Assessment Significance
 
 This step demonstrates the complementary roles of manual enumeration and exploitation frameworks.
 
@@ -432,7 +438,7 @@ Manual enumeration identified the exact sudo configuration present on the target
 
 The assessment therefore did not rely solely on an automated module search to declare the vulnerability confirmed.
 
-Evidence
+### Evidence
 
 screenshots/metasploit-sudo-module-search.png
 
@@ -478,16 +484,17 @@ The previously identified FTP service was ProFTPD 1.3.5 running on TCP port 21. 
 #### Command Used
 
 ```text
-search proftpd modcopy
-What It Does
+search proftpd
+```
+### What It Does
 
 The search command queries the Metasploit module database for modules matching the supplied search terms. In this case, proftpd modcopy narrows the search toward modules associated with ProFTPD's mod_copy functionality.
 
-Why We're Running It
+### Why We're Running It
 
 The service enumeration phase identified ProFTPD 1.3.5 on the target. Module discovery is therefore being performed against a previously identified service rather than selecting an exploit arbitrarily.
 
-Assessment Significance
+### Assessment Significance
 
 This step connects the vulnerability/service-enumeration phase with the exploitation phase. The presence of a matching Metasploit module does not by itself prove that the target is exploitable; exploitation must still be validated against the authorized laboratory target.
 
@@ -508,8 +515,9 @@ After identifying a matching ProFTPD module, the module was loaded without immed
 
 ```text
 use exploit/unix/ftp/proftpd_modcopy_exec
-show options
-What It Does
+show
+```
+### What It Does
 
 The use command selects the exploit/unix/ftp/proftpd_modcopy_exec module.
 
@@ -565,7 +573,7 @@ The LHOST value determines the local address that receives the connection, while
 
 Because the displayed LHOST value was 10.0.2.15, its suitability for the current 192.168.56.0/24 laboratory network must be verified before execution.
 
-Assessment Significance
+### Assessment Significance
 
 The module review establishes a clear relationship between the previous reconnaissance findings and the exploitation phase:
 
@@ -603,8 +611,9 @@ Before configuring the reverse payload, the network interfaces on the Kali asses
 #### Command Used
 
 ```text
-ip addr
-What It Does
+ip
+```
+### What It Does
 
 The ip addr command displays the network interfaces and their assigned IP addresses on the local Kali system.
 
@@ -625,7 +634,7 @@ Both systems therefore reside on the 192.168.56.0/24 laboratory network.
 
 The Kali system also has an eth0 address of 10.0.2.15. Although this address is valid on the Kali system, it belongs to a different network and is not the appropriate address for the reverse connection in this laboratory configuration.
 
-Assessment Significance
+### Assessment Significance
 
 The interface verification established that 192.168.56.103 is the appropriate local address for the reverse payload.
 
@@ -657,7 +666,7 @@ The set LHOST command changes the local host address used by the configured reve
 
 In this assessment, LHOST was changed from the automatically displayed 10.0.2.15 address to 192.168.56.103, which is the Kali interface connected to the same laboratory network as the Metasploitable3 target.
 
-Why We're Running It
+### Why We're Running It
 
 A reverse payload must connect back to an address reachable from the target. Using the correct laboratory interface ensures that the payload is configured for the intended assessment network rather than an unrelated interface.
 
@@ -677,7 +686,7 @@ Changing LHOST does not itself establish successful exploitation. It only prepar
 
 The configuration was therefore verified before proceeding to the exploitation stage.
 
-Evidence
+### Evidence
 
 screenshots/metasploit-proftpd-lhost-configured1.png
 screenshots/metasploit-proftpd-lhost-configured2.
@@ -690,24 +699,25 @@ Before attempting exploitation, the selected Metasploit module was reviewed usin
 #### Command Used
 
 ```text
-info
-What It Does
+
+```
+### What It Does
 
 The info command displays detailed information about the currently selected Metasploit module. This can include the module description, affected software, references, disclosure information, available targets, payload information, and module-specific technical details.
 
-Why We're Running It
+### Why We're Running It
 
 The module was selected because the earlier service enumeration identified ProFTPD 1.3.5 on the target. Reviewing the module information provides additional context before execution and helps confirm that the selected module is appropriate for the identified service.
 
 This is also an important validation step because finding a module through search does not automatically establish that the target is exploitable.
 
-Assessment Significance
+### Assessment Significance
 
 The module information provides additional technical context for the proposed exploitation path and supports the assessment methodology of validating the selected module before execution.
 
 The exploitation decision is therefore based on the previously identified ProFTPD service and version rather than an arbitrary module selection.
 
-Evidence
+### Evidence
 screenshots/metasploit-proftpd-module-info1.png
 screenshots/metasploit-proftpd-module-info2.png
 screenshots/metasploit-proftpd-module-info3.png
@@ -773,7 +783,7 @@ Metasploitable3
 
 Only after RHOSTS and LHOST have been explicitly configured and verified should the assessment proceed to exploitation validation.
 
-Evidence
+### Evidence
 
 screenshots/metasploit-proftpd-pre-exploit-options1.png
 screenshots/metasploit-proftpd-pre-exploit-options2.png
@@ -800,7 +810,7 @@ At this point, the target has passed the module's vulnerability check and the ex
 
 The vulnerability check itself did not establish root privileges or successful command execution. Those outcomes must be validated separately after exploitation.
 
-Evidence
+### Evidence
 
 screenshots/metasploit-proftpd-check.png
 ---
@@ -813,6 +823,7 @@ After the target passed the Metasploit vulnerability check, an exploitation atte
 
 ```text
 exploit
+```
 What It Does
 
 The exploit command instructs Metasploit to execute the selected proftpd_modcopy_exec module using the configured target, module options, and reverse payload.
@@ -890,6 +901,7 @@ After the exploitation attempt completed, the Metasploit session table was check
 
 ```text
 sessions
+```
 What It Does
 
 The sessions command displays active sessions established by Metasploit modules.
